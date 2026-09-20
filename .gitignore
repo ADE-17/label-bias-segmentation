@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pt
+*.pth
+*.out
+*.err
+/experiments/
+/evaluations*/
+/logs/
+venv/
+.ipynb_checkpoints/

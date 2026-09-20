@@ -1,0 +1,17 @@
+{
+  "csv_path": "configs/imapp_processed.csv",
+  "img_size": 256,
+  "epochs": 15,
+  "batch_size": 32,
+  "lr": 0.0001,
+  "fold": 2,
+  "n_folds": 5,
+  "bias_ratio": 0.0,
+  "biased_skin_tones": [
+    2,
+    3
+  ],
+  "output_dir": "/path/to/output",
+  "exp_name": "imapp_baseline_r0",
+  "device": "cuda"
+}
