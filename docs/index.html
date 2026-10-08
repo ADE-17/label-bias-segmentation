@@ -63,6 +63,8 @@ ul.points li::before{content:"";position:absolute;left:0;top:.6em;width:10px;hei
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.88rem;color:var(--muted);margin-top:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .hero{padding:56px 0 30px;background:linear-gradient(180deg,var(--bg2),var(--bg));text-align:center;border-bottom:1px solid var(--line)}
+.hero .logo{display:inline-block;background:#fff;border-radius:12px;padding:8px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
+.hero .logo img{height:64px;display:block}
 .hero .venue{display:inline-block;background:var(--navy);color:#fff;padding:5px 14px;border-radius:999px;font-weight:700;font-size:.82rem;letter-spacing:.06em;margin-bottom:16px}
 .people{display:flex;justify-content:center;flex-wrap:wrap;gap:24px;margin:24px 0 8px}
 .person{text-align:center;width:150px}
@@ -74,6 +76,12 @@ ul.points li::before{content:"";position:absolute;left:0;top:.6em;width:10px;hei
 pre.bib{background:#1f2328;color:#e9ecf3;padding:18px;border-radius:12px;overflow:auto;font-size:.84rem;line-height:1.5;position:relative;font-family:Menlo,Consolas,"Liberation Mono",monospace}
 .copy{position:absolute;top:10px;right:10px}
 footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:.95rem}
+th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th{font-size:.78rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+td:first-child,th:first-child,td:nth-child(2),th:nth-child(2){text-align:left}
+tr.ours td{background:var(--orange-soft)}
+td.best{font-weight:700;color:var(--navy)}
 .schema{width:100%;height:auto;display:block}
 </style>
 </head>
@@ -81,7 +89,8 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;text-align:center}
 
 <header class="hero">
   <div class="wrap">
-    <span class="venue">NeurIPS 2026</span>
+    <div class="logo"><img src="assets/neurips_logo.png" alt="NeurIPS"></div>
+    <span class="venue">Accepted at NeurIPS 2026 · Paris</span>
     <h1>Towards Fairness under Label Bias in Image Segmentation</h1>
     <p style="font-family:'Libre Baskerville',serif;font-style:italic;font-size:1.2rem;color:var(--muted)">Impact, Measurement and Mitigation</p>
     <div class="people">
@@ -188,13 +197,10 @@ footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;text-align:center}
     <li><b>SCD.</b> A group code enters the decoder through FiLM layers; each annotation style gets its own modulation. At inference every image is decoded with the reference code.</li>
     <li><b>Auto-SCD.</b> Track the training loss per group during warm-up and pick the group with the lowest loss as reference. Clean labels are easier to fit.</li>
   </ul>
-  <div class="card widget">
-    <div class="title"><h3>Auto-SCD: reference selection from training dynamics</h3><span class="tag">animation</span></div>
-    <canvas id="m-canvas" width="960" height="300"></canvas>
-  </div>
-  <div class="card widget">
-    <div class="title"><h3>Best result per dataset: true IoU and true subgroup gap</h3></div>
-    <svg id="m-res" viewBox="0 0 960 300" style="width:100%;height:auto"></svg>
+  <div class="card widget" style="overflow:auto">
+    <div class="title"><h3>True IoU / true subgroup gap Δ, all methods</h3></div>
+    <table id="restab"></table>
+    <p style="font-size:.9rem;color:var(--muted);margin:10px 0 0">Mean IoU against clean masks (%) / subgroup gap (pp, lower is better). Best per column in bold; our methods shaded. Fairness regularisers, feature alignment and noise-robust losses barely move the gap; subgroup conditioning closes it.</p>
   </div>
 </div></section>
 
@@ -327,44 +333,18 @@ $$('#a2grid canvas').forEach(c=>{const ctx=c.getContext('2d'),m=c.dataset.m;cons
   $('#clschema').innerHTML=s;
 })();
 
-/* 5. Auto-SCD: training dynamics */
+/* 5. results table */
 (()=>{
-  const c=$('#m-canvas'),ctx=c.getContext('2d');const EP=4,DUR=7;
-  const lossC=e=>0.072+0.11*Math.exp(-1.6*e),lossB=e=>0.161+0.13*Math.exp(-1.1*e);
-  loop(t=>{
-    const tt=t%DUR;const prog=Math.min(1,tt/4.5);const e=prog*EP;const done=tt>5;
-    ctx.clearRect(0,0,c.width,c.height);
-    const L=70,R=330,T=30,B=50,W=c.width,H=c.height;
-    const sx=v=>L+v/EP*(W-L-R),sy=v=>H-B-(v/0.32)*(H-T-B);
-    ctx.strokeStyle=css('--line');ctx.lineWidth=1;ctx.font='12px '+FONT;ctx.fillStyle=css('--muted');
-    for(let i=0;i<=4;i++){const v=0.08*i;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(W-R,sy(v));ctx.stroke();ctx.textAlign='right';ctx.fillText(v.toFixed(2),L-8,sy(v)+4);}
-    ctx.textAlign='center';for(let i=0;i<=EP;i++)ctx.fillText('epoch '+i,sx(i),H-B+20);
-    ctx.textAlign='left';ctx.font='600 13px '+FONT;ctx.fillStyle=css('--ink');ctx.fillText('mean per-sample training loss, by group',L,T-10);
-    [[GC,lossC,'g_c'],[GB,lossB,'g_b']].forEach(([col,f,l])=>{ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.beginPath();for(let i=0;i<=100;i++){const x=e*i/100;i?ctx.lineTo(sx(x),sy(f(x))):ctx.moveTo(sx(x),sy(f(x)));}ctx.stroke();
-      ctx.fillStyle=col;ctx.beginPath();ctx.arc(sx(e),sy(f(e)),6,0,7);ctx.fill();ctx.font='600 13px '+FONT;ctx.fillText(`${l}  ${f(e).toFixed(3)}`,sx(e)+12,sy(f(e))+5);});
-    // side panel
-    const px=W-R+30;ctx.fillStyle=css('--bg2');rrect(ctx,px,T,R-40,H-T-B,12);ctx.fill();
-    ctx.fillStyle=css('--ink');ctx.font='700 14px '+FONT;ctx.fillText('after warm-up',px+16,T+28);
-    ctx.font='13px '+FONT;ctx.fillStyle=css('--muted');ctx.fillText('compare mean loss per group',px+16,T+50);
-    [[GC,'g_c',lossC(EP),0],[GB,'g_b',lossB(EP),1]].forEach(([col,l,v,i])=>{const y=T+70+i*34;ctx.fillStyle=col;rrect(ctx,px+16,y,Math.max(4,prog*v/0.2*(R-100)),22,6);ctx.fill();ctx.fillStyle=css('--ink');ctx.font='600 13px '+FONT;ctx.fillText(l,px+16+4,y-4);});
-    if(done){ctx.fillStyle=GREEN;rrect(ctx,px+16,T+150,R-72,34,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 14px '+FONT;ctx.fillText('lowest loss → g_c is the reference',px+28,T+172);}
-  });
-})();
-
-/* 5b. best results */
-(()=>{
-  const rows=[['CelebAMask-HQ β=50%',93.1,5.5,96.8,0.5,'SCD+Asym'],['CelebAMask-HQ β=100%',82.5,21.0,89.2,9.0,'SCD+Asym'],['PhC-U373',91.2,4.4,92.5,3.2,'Auto-SCD'],['IMA++ β=50%',81.7,19.6,87.4,6.2,'Auto-SCD']];
-  const F=`font-family='${FONT}'`;const W=960,L=40,T=40,B=70,H=300,gw=(W-2*L)/rows.length;const sy=v=>T+(1-(v-70)/30)*(H-T-B);let s='';
-  [70,80,90,100].forEach(v=>s+=`<line x1="${L}" x2="${W-L}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end" ${F} font-size="12" fill="${css('--muted')}">${v}</text>`);
-  rows.forEach((r,i)=>{const x0=L+i*gw+gw*0.16,bw=gw*0.3;
-    [[r[1],r[2],'#9fb3cf','ERM'],[r[3],r[4],INK,r[5]]].forEach(([iou,gap,col,lab],j)=>{const x=x0+j*(bw+12);
-      s+=`<rect x="${x}" y="${sy(iou)}" width="${bw}" height="${H-B-sy(iou)}" rx="6" fill="${col}"/>`;
-      s+=`<text x="${x+bw/2}" y="${sy(iou)-20}" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="700" fill="${col}">${iou.toFixed(1)}</text>`;
-      s+=`<text x="${x+bw/2}" y="${sy(iou)-6}" text-anchor="middle" ${F} font-size="11" font-weight="700" fill="${LOST}">Δ ${gap.toFixed(1)} pp</text>`;
-      s+=`<text x="${x+bw/2}" y="${H-B+16}" text-anchor="middle" ${F} font-size="11" fill="${css('--muted')}">${lab}</text>`;});
-    s+=`<text x="${L+i*gw+gw/2}" y="${H-B+38}" text-anchor="middle" ${F} font-size="13" font-weight="700" fill="${css('--ink')}">${r[0]}</text>`;});
-  s+=`<text x="${L}" y="${T-16}" ${F} font-size="12" font-weight="700" fill="${css('--ink')}">true IoU (%)   <tspan fill="${LOST}">Δ = true subgroup gap, lower is better</tspan></text>`;
-  $('#m-res').innerHTML=s;
+  const cols=['CelebA β=50%','CelebA β=100%','PhC-U373','IMA++ β=50%'];
+  const rows=[['Reference','ERM',[93.1,5.5],[82.5,21.0],[91.2,4.4],[81.7,19.6]],
+    ['Fairness','EO',[93.0,5.7],[82.6,21.0],[91.9,3.6],[79.8,13.9]],['','DP',[93.0,5.6],[82.6,21.0],[92.0,3.4],[79.6,13.6]],['','EO+DP',[92.8,5.8],[82.4,20.9],[91.9,3.5],[79.9,13.1]],
+    ['Alignment','Adversarial',[92.4,6.7],[82.7,21.1],[91.8,3.7],[80.3,13.9]],['','MMD',[92.8,6.3],[82.8,20.5],[91.7,3.9],[80.0,13.0]],['','CORAL',[93.2,5.5],[82.6,20.9],[91.7,3.9],[79.7,13.9]],
+    ['Noise-robust','GCE',[92.3,6.6],[82.5,21.3],[91.0,3.9],[80.0,14.6]],['','Bootstrapping',[92.8,5.8],[82.5,21.1],[91.0,3.7],[80.2,14.7]],
+    ['Ours','Asym. mask',[91.5,7.9],[79.8,24.7],[90.9,5.0],[79.7,14.6],1],['','SCD',[96.8,0.5],[89.0,8.9],[91.8,3.6],[85.8,6.7],1],['','SCD+Asym',[96.8,0.5],[89.2,9.0],[91.1,4.8],[86.0,7.0],1],['','Auto-SCD',[93.7,4.2],[85.3,16.1],[92.5,3.2],[87.4,6.2],1]];
+  const best=[0,1,2,3].map(j=>Math.min(...rows.map(r=>r[2+j][1])));
+  let h='<thead><tr><th></th><th>Method</th>'+cols.map(c=>`<th>${c}<br>IoU / Δ</th>`).join('')+'</tr></thead><tbody>';
+  rows.forEach(r=>{h+=`<tr class="${r[6]?'ours':''}"><td style="color:var(--muted);font-size:.85rem">${r[0]}</td><td>${r[1]}</td>`+[0,1,2,3].map(j=>`<td class="${r[2+j][1]===best[j]?'best':''}">${r[2+j][0].toFixed(1)} / ${r[2+j][1].toFixed(1)}</td>`).join('')+'</tr>';});
+  $('#restab').innerHTML=h+'</tbody>';
 })();
 
 $('#copybib').onclick=()=>{navigator.clipboard.writeText($('#bibtex').textContent).then(()=>{$('#copybib').textContent='Copied';setTimeout(()=>$('#copybib').textContent='Copy',1500);});};
