@@ -9,82 +9,72 @@
 <meta property="og:description" content="Auditing and mitigating group-dependent annotation bias in segmentation without clean labels.">
 <meta property="og:image" content="assets/figures/audit_overview.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#fbf8f2; --bg2:#f3eee3; --card:#ffffff; --ink:#1b1f2a; --muted:#5b6170; --line:#e4ddcf;
-  --navy:#17365d; --blue:#1d5fd1; --blue-soft:#dbe7fb; --orange:#f28c28; --orange-soft:#fde7cf;
-  --red:#d7263d; --green:#2a9d6b; --gold:#e3b23c; --gc:#3b7dd8; --gb:#e4572e;
-  --radius:18px; --shadow:0 10px 30px rgba(27,31,42,.08);
+  --bg:#fdfcf9; --bg2:#f2efe8; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#e1ddd3;
+  --navy:#1f3a5f; --blue:#2458a6; --blue-soft:#e3ebf7; --orange:#ee8a2a; --orange-soft:#fbe6cf;
+  --red:#c8273d; --green:#2f8f63; --gold:#d9a93a; --gc:#3b7dd8; --gb:#e4572e;
+  --radius:14px; --shadow:0 6px 24px rgba(31,35,40,.07);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
-  --bg:#12151c; --bg2:#1a1f29; --card:#1f2531; --ink:#eef0f4; --muted:#a3abba; --line:#2d3544;
-  --blue-soft:#1f2f4d; --orange-soft:#4a3418; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --bg:#14171c; --bg2:#1c2027; --card:#20252d; --ink:#edeff2; --muted:#a4abb6; --line:#2f353f;
+  --blue-soft:#20304a; --orange-soft:#4a3418; --shadow:0 6px 24px rgba(0,0,0,.35);
 }}
 :root[data-theme="dark"]{
-  --bg:#12151c; --bg2:#1a1f29; --card:#1f2531; --ink:#eef0f4; --muted:#a3abba; --line:#2d3544;
-  --blue-soft:#1f2f4d; --orange-soft:#4a3418; --shadow:0 10px 30px rgba(0,0,0,.35);
+  --bg:#14171c; --bg2:#1c2027; --card:#20252d; --ink:#edeff2; --muted:#a4abb6; --line:#2f353f;
+  --blue-soft:#20304a; --orange-soft:#4a3418; --shadow:0 6px 24px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
-html{scroll-behavior:smooth}
-body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6;font-size:17px}
-h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15;margin:0 0 .4em}
-h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:700;letter-spacing:-.01em}
-h2{font-size:clamp(1.5rem,3.2vw,2.2rem);font-weight:700}
-h3{font-size:1.2rem;font-weight:700}
-p{margin:0 0 1em}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Helvetica Neue",Arial,sans-serif;line-height:1.55;font-size:18px}
+h1,h2,h3{font-family:"Libre Baskerville",Georgia,"Times New Roman",serif;line-height:1.2;margin:0 0 .4em;font-weight:700}
+h1{font-size:clamp(1.8rem,4.2vw,2.8rem)}
+h2{font-size:clamp(1.35rem,2.8vw,1.9rem)}
+h3{font-size:1.1rem}
+p{margin:0 0 .9em}
 a{color:var(--blue)}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-.narrow{max-width:760px}
-section{padding:64px 0}
+.wrap{max-width:1060px;margin:0 auto;padding:0 16px}
+section{padding:56px 0}
 section + section{border-top:1px solid var(--line)}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
-.eyebrow .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-family:Fraunces,serif;font-size:.95rem}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
-.widget{margin:26px 0}
-.widget .title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.eyebrow .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:"Libre Baskerville",serif;font-size:.85rem}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
+.widget{margin:22px 0}
+.widget .title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px}
 .widget .title h3{margin:0}
-.tag{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--orange-soft);color:#8a4b08}
-button,.btn{font:inherit;font-weight:600;font-size:.9rem;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:.15s;text-decoration:none}
-button:hover,.btn:hover{border-color:var(--navy);transform:translateY(-1px)}
+.tag{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;border-radius:999px;background:var(--orange-soft);color:#8a4b08}
+.btn{font:inherit;font-weight:600;font-size:.95rem;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;text-decoration:none}
 .btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
-.seg button{border:0;border-radius:0;padding:8px 14px}
-.seg button + button{border-left:1px solid var(--line)}
-.seg button.on{background:var(--navy);color:#fff}
-canvas{display:block;max-width:100%;height:auto;border-radius:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
-.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+button.copy{font:inherit;font-size:.85rem;padding:5px 12px;border-radius:999px;border:1px solid #555;background:#2b3038;color:#fff;cursor:pointer}
+canvas{display:block;max-width:100%;height:auto;border-radius:10px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
 @media (max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
-figure{margin:22px 0}
-figure img{width:100%;border-radius:12px;border:1px solid var(--line);background:#fff}
-figcaption{font-size:.9rem;color:var(--muted);margin-top:8px}
-.note{border-left:4px solid var(--gold);background:var(--bg2);padding:12px 16px;border-radius:0 12px 12px 0;margin:18px 0}
-.chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.8rem;font-weight:600}
+figure{margin:20px 0}
+figure img{width:100%;border-radius:10px;border:1px solid var(--line);background:#fff}
+figcaption{font-size:.92rem;color:var(--muted);margin-top:8px}
+ul.points{margin:8px 0 0;padding-left:0;list-style:none}
+ul.points li{position:relative;padding-left:22px;margin:4px 0}
+ul.points li::before{content:"";position:absolute;left:0;top:.6em;width:10px;height:10px;border-radius:2px;background:var(--navy)}
+.note{border-left:4px solid var(--gold);background:var(--bg2);padding:10px 16px;border-radius:0 10px 10px 0;margin:16px 0}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;font-size:.82rem;font-weight:700}
 .chip.gc{background:#dce9fb;color:#17467f}.chip.gb{background:#fde0d4;color:#8f2f10}
 .chip.exc{background:var(--orange-soft);color:#8a4b08}.chip.def{background:var(--blue-soft);color:#17467f}
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:8px}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.88rem;color:var(--muted);margin-top:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-.hero{padding:64px 0 36px;background:radial-gradient(1200px 500px at 20% -10%,var(--blue-soft),transparent),radial-gradient(900px 400px at 100% 0,var(--orange-soft),transparent);text-align:center}
-.hero .venue{display:inline-block;background:var(--navy);color:#fff;padding:6px 14px;border-radius:999px;font-weight:600;font-size:.85rem;margin-bottom:18px}
-.people{display:flex;justify-content:center;flex-wrap:wrap;gap:26px;margin:26px 0 10px}
+.hero{padding:56px 0 30px;background:linear-gradient(180deg,var(--bg2),var(--bg));text-align:center;border-bottom:1px solid var(--line)}
+.hero .venue{display:inline-block;background:var(--navy);color:#fff;padding:5px 14px;border-radius:999px;font-weight:700;font-size:.82rem;letter-spacing:.06em;margin-bottom:16px}
+.people{display:flex;justify-content:center;flex-wrap:wrap;gap:24px;margin:24px 0 8px}
 .person{text-align:center;width:150px}
-.person .ph{width:120px;height:120px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:var(--bg2);border:4px solid var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-family:Fraunces,serif;font-size:2rem;font-weight:700;color:var(--navy)}
+.person .ph{width:118px;height:118px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:var(--bg2);border:3px solid var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-family:"Libre Baskerville",serif;font-size:1.8rem;color:var(--navy)}
 .person .ph img{width:100%;height:100%;object-fit:cover}
 .person b{display:block;font-size:1rem;line-height:1.2}
-.affil{color:var(--muted);margin:6px 0 18px}
-.links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:14px 0}
-.links .btn svg{width:16px;height:16px;vertical-align:-3px;margin-right:6px}
-.storynav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.storynav .wrap{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;scrollbar-width:none}
-.storynav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-size:.85rem;font-weight:600;padding:6px 12px;border-radius:999px}
-.storynav a.active,.storynav a:hover{background:var(--navy);color:#fff}
-.steps{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
-.steps button{padding:7px 12px;font-size:.85rem}
-.steps button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-pre.bib{background:#1b1f2a;color:#e9ecf3;padding:18px;border-radius:14px;overflow:auto;font-size:.82rem;line-height:1.5;position:relative}
+.affil{color:var(--muted);margin:4px 0 16px}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:12px 0}
+pre.bib{background:#1f2328;color:#e9ecf3;padding:18px;border-radius:12px;overflow:auto;font-size:.84rem;line-height:1.5;position:relative;font-family:Menlo,Consolas,"Liberation Mono",monospace}
 .copy{position:absolute;top:10px;right:10px}
-footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
+footer{padding:30px 0 50px;color:var(--muted);font-size:.9rem;text-align:center}
+.schema{width:100%;height:auto;display:block}
 </style>
 </head>
 <body>
@@ -93,7 +83,7 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
   <div class="wrap">
     <span class="venue">NeurIPS 2026</span>
     <h1>Towards Fairness under Label Bias in Image Segmentation</h1>
-    <p style="font-family:Fraunces,serif;font-size:1.3rem;color:var(--muted)">Impact, Measurement and Mitigation</p>
+    <p style="font-family:'Libre Baskerville',serif;font-style:italic;font-size:1.2rem;color:var(--muted)">Impact, Measurement and Mitigation</p>
     <div class="people">
       <div class="person"><div class="ph"><img src="assets/authors/aditya_parikh.jpg" alt="Aditya Parikh" onerror="this.parentNode.textContent='AP'"></div><b>Aditya Parikh</b></div>
       <div class="person"><div class="ph"><img src="assets/authors/stella_frank.jpg" alt="Stella Frank" onerror="this.parentNode.textContent='SF'"></div><b>Stella Frank</b></div>
@@ -102,47 +92,38 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
     </div>
     <div class="affil">Technical University of Denmark, DTU Compute</div>
     <div class="links">
-      <a class="btn primary" href="https://arxiv.org/abs/2605.06891"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9l5 5v15H6z M14 2v6h6"/></svg>arXiv</a>
-      <a class="btn" href="https://arxiv.org/pdf/2605.06891"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4z"/></svg>PDF</a>
-      <a class="btn" href="https://github.com/ADE-17/label-bias-segmentation"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>Code</a>
+      <a class="btn primary" href="https://arxiv.org/abs/2605.06891">arXiv</a>
+      <a class="btn" href="https://arxiv.org/pdf/2605.06891">PDF</a>
+      <a class="btn" href="https://github.com/ADE-17/label-bias-segmentation">Code</a>
       <a class="btn" href="#cite">BibTeX</a>
     </div>
-    <p class="narrow" style="margin:14px auto 0;color:var(--muted)">
-      When annotation style differs systematically between demographic groups, a segmentation model inherits that
-      <b>label bias</b>, and the usual way to detect it, comparing against clean labels, is exactly what we do not have.
-    </p>
   </div>
 </header>
-
-<nav class="storynav"><div class="wrap">
-  <a href="#s1">1 Label bias</a><a href="#s2">2 The bent ruler</a><a href="#s3">3 Confident Learning</a><a href="#s4">4 Separability</a><a href="#s5">5 Mitigation</a><a href="#cite">Cite</a>
-</div></nav>
 
 <!-- 1 -->
 <section id="s1"><div class="wrap">
   <div class="eyebrow"><span class="num">1</span> Label bias in segmentation</div>
   <h2>Two groups, two annotation styles</h2>
-  <p class="narrow">Images of group <span class="chip gc">g<sub>c</sub></span> are annotated carefully, with tight boundaries.
-  Images of group <span class="chip gb">g<sub>b</sub></span> are annotated by someone who constantly over-segments.
-  Each mask is <i>mostly</i> right, but the error is systematic and tied to the group. That is label bias.</p>
-
+  <ul class="points">
+    <li><span class="chip gc">g<sub>c</sub></span> is annotated with tight, detailed boundaries.</li>
+    <li><span class="chip gb">g<sub>b</sub></span> is annotated by someone who constantly over-segments.</li>
+    <li>Same objects, same difficulty. Only the style differs, and it is tied to the group.</li>
+  </ul>
   <div class="card widget">
-    <div class="title"><h3>Annotating a stream of images</h3><span class="tag">animation</span></div>
-    <canvas id="a1" width="960" height="330"></canvas>
-    <div class="legend"><span><i style="background:#17365d"></i>true object</span><span><i style="background:#3b7dd8"></i>g<sub>c</sub> annotation (tight)</span><span><i style="background:#e4572e"></i>g<sub>b</sub> annotation (over-segmented)</span></div>
+    <canvas id="a1" width="960" height="320"></canvas>
+    <div class="legend"><span><i style="background:#1f3a5f"></i>true object</span><span><i style="background:#3b7dd8"></i>g<sub>c</sub> annotation</span><span><i style="background:#e4572e"></i>g<sub>b</sub> annotation</span></div>
   </div>
-
-  <p class="narrow">Because pixels have geometry, bias has a <b>direction</b>. The paper studies three: under-segmentation
-  (<span class="chip def">deficit</span>, e.g. erosion), over-segmentation (<span class="chip exc">excess</span>, e.g. dilation or
-  coarse "bloated" masks) and wavy boundary distortion (mixed).</p>
+  <ul class="points">
+    <li>Pixels have geometry, so bias has a direction: <span class="chip def">deficit</span> (under-segmentation), <span class="chip exc">excess</span> (over-segmentation), or irregular (both).</li>
+  </ul>
   <div class="grid3" id="a2grid">
-    <div class="card"><h3>Under-segmentation</h3><canvas width="300" height="210" data-m="erosion"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Eroded mask. Lost foreground in red.</p></div>
-    <div class="card"><h3>Over-segmentation</h3><canvas width="300" height="210" data-m="dilation"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Dilated or bloated mask. Added foreground in orange.</p></div>
-    <div class="card"><h3>Wavy boundary</h3><canvas width="300" height="210" data-m="wave"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Boundary distortion. Both excess and deficit.</p></div>
+    <div class="card"><h3>Under-segmentation</h3><canvas width="300" height="200" data-m="erosion"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.92rem">Eroded mask; lost foreground in red.</p></div>
+    <div class="card"><h3>Over-segmentation</h3><canvas width="300" height="200" data-m="dilation"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.92rem">Bloated mask; added foreground in orange.</p></div>
+    <div class="card"><h3>Irregular boundary</h3><canvas width="300" height="200" data-m="wave"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.92rem">Boundary distortion; excess and deficit.</p></div>
   </div>
   <div class="grid2">
     <figure><img src="assets/figures/erosion_grid.png" alt="Erosion radius sweep on a CelebAMask-HQ face mask"><figcaption>CelebAMask-HQ: controlled under-segmentation by eroding the face mask with increasing radius.</figcaption></figure>
-    <figure><img src="assets/figures/phc_clean_vs_biased.png" alt="PhC-U373 fine vs coarse annotations"><figcaption>PhC-U373: a fine (green) and a coarse, bloated (red) human annotation of the same cell. Naturally occurring over-segmentation.</figcaption></figure>
+    <figure><img src="assets/figures/phc_clean_vs_biased.png" alt="PhC-U373 fine vs coarse annotations"><figcaption>PhC-U373: fine (green) and coarse, bloated (red) human annotations of the same cell.</figcaption></figure>
   </div>
 </div></section>
 
@@ -150,47 +131,39 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
 <section id="s2"><div class="wrap">
   <div class="eyebrow"><span class="num">2</span> The bent ruler</div>
   <h2>Observed performance does not track true performance</h2>
-  <p class="narrow">Fairness audits compare IoU across groups, computed against the <i>observed</i> labels, the very labels
-  that are biased. A model that reproduces the biased style scores well on the biased test set. The true disparity, visible
-  only with clean labels, can be far larger, far smaller, or move the other way.</p>
-
+  <ul class="points">
+    <li>IoU is computed against the observed labels, which are the biased ones.</li>
+    <li>The true subgroup gap, visible only with clean labels, can be far larger, smaller, or move the other way.</li>
+  </ul>
   <div class="card widget">
-    <div class="title"><h3>Subgroup IoU gap vs. amount of label bias</h3>
-      <span class="seg" id="r-ds"><button data-d="celeba" class="on">CelebAMask-HQ</button><button data-d="phc">PhC-U373</button><button data-d="imapp">IMA++</button></span></div>
-    <svg id="r-svg" viewBox="0 0 960 330" style="width:100%;height:auto"></svg>
-    <p id="r-msg" style="margin:8px 0 0;color:var(--muted)"></p>
+    <div class="grid3">
+      <div><h3 style="text-align:center">CelebAMask-HQ</h3><svg class="rul" data-d="celeba" viewBox="0 0 320 260" style="width:100%;height:auto"></svg></div>
+      <div><h3 style="text-align:center">PhC-U373</h3><svg class="rul" data-d="phc" viewBox="0 0 320 260" style="width:100%;height:auto"></svg></div>
+      <div><h3 style="text-align:center">IMA++</h3><svg class="rul" data-d="imapp" viewBox="0 0 320 260" style="width:100%;height:auto"></svg></div>
+    </div>
+    <div class="legend"><span><i style="background:#1f3a5f"></i>true gap (clean labels)</span><span><i style="background:#c8273d"></i>observed gap (biased labels)</span><span><i style="background:rgba(200,39,61,.18)"></i>what the ruler gets wrong</span></div>
   </div>
-  <div class="note"><b>Takeaway.</b> Evaluation against observed labels hides label bias rather than detecting it.
-  We need an audit signal that does not require clean labels.</div>
+  <div class="note">Evaluation against observed labels hides label bias instead of detecting it. We need an audit that does not use clean labels.</div>
 </div></section>
 
 <!-- 3 -->
 <section id="s3"><div class="wrap">
   <div class="eyebrow"><span class="num">3</span> Confident Learning as an audit</div>
-  <h2>Confident predictions as a second opinion</h2>
-  <p class="narrow">A model trained with cross-fitting on the biased data is still <b>confident</b> on most pixels, because
-  it has seen many images and most of each mask is correct. Where a confident prediction disagrees with the observed label,
-  we flag a suspected label error and split it by direction.</p>
-
+  <h2>Audit the training labels with the training set itself</h2>
+  <ul class="points">
+    <li><b>No clean labels.</b> Everything below uses only the biased training set and a model trained on it.</li>
+    <li><b>Cross-fitting.</b> Split the training set into K folds; each fold is predicted by a model that never saw it.</li>
+    <li><b>Confident joint Q.</b> Count confident pixels in a 2×2 matrix of observed label vs. predicted label. Only the off-diagonal cells are suspected label errors.</li>
+    <li><b>Direction.</b> Excess (label 1, model 0) and deficit (label 0, model 1) are summed into LER, subtracted into DR, and compared across groups as RR.</li>
+  </ul>
   <div class="card widget">
-    <div class="title"><h3>How the audit works on one image</h3><span class="tag">animation</span></div>
-    <div class="steps" id="c-steps"><button class="on">1 Observed label</button><button>2 Cross-fitted prediction</button><button>3 Keep confident pixels</button><button>4 Decompose disagreement</button><button>5 Summarise</button></div>
-    <canvas id="c-canvas" width="960" height="330"></canvas>
-    <p id="c-msg" style="margin:10px 0 0;font-weight:500"></p>
+    <svg id="clschema" class="schema" viewBox="0 0 960 400"></svg>
   </div>
-
-  <div class="grid3" style="margin:18px 0">
-    <div class="card"><h3>LER</h3><p style="margin:0;color:var(--muted)">Label Error Rate: (excess + deficit) / foreground. <i>How much</i> suspected error.</p></div>
-    <div class="card"><h3>DR</h3><p style="margin:0;color:var(--muted)">Directional Rate: (excess − deficit) / foreground. <i>Which way</i>: positive is over-, negative is under-segmentation.</p></div>
-    <div class="card"><h3>RR</h3><p style="margin:0;color:var(--muted)">Relative Risk: LER<sub>g<sub>b</sub></sub> / LER<sub>g<sub>c</sub></sub>. <i>Where</i> errors concentrate; RR ≫ 1 flags a group.</p></div>
-  </div>
-
-  <figure><img src="assets/figures/audit_overview.png" alt="Audit results on three datasets"><figcaption><b>Top:</b> the bent ruler on all three datasets. <b>Bottom:</b> the CL audit computed from observed masks only.
-  LER rises in g<sub>b</sub> with bias, RR grows beyond the unbiased baseline, and DR gives the direction: negative (deficit) for erosion on CelebAMask-HQ, positive (excess) for the bloated PhC-U373 style.</figcaption></figure>
-
+  <figure><img src="assets/figures/cl_metrics.png" alt="CL decomposition of annotation disagreement"><figcaption>Comparison of the observed mask with the confident prediction, decomposition into excess and deficit, assembly into LER, DR and RR.</figcaption></figure>
+  <figure><img src="assets/figures/audit_overview.png" alt="Audit results on three datasets"><figcaption>Top: the bent ruler on all three datasets. Bottom: the CL audit from observed masks only. LER rises in g<sub>b</sub> with bias, RR grows beyond the unbiased baseline, DR gives the direction: negative for erosion (CelebAMask-HQ), positive for bloated masks (PhC-U373).</figcaption></figure>
   <div class="grid2">
-    <div class="card"><h3>What it means</h3><p style="margin:0;color:var(--muted)">From training data alone we get a proxy audit: how much label error there is, in which group, and in which direction. Thresholds adapt to the model's calibration, so temperature scaling leaves the gaps unchanged, and a retrospective check against clean masks confirms that detected errors track the injected bias.</p></div>
-    <div class="card"><h3>Limitations</h3><p style="margin:0;color:var(--muted)">CL sees <i>disagreement</i>, not truth. If the biased style dominates (β = 100 % erosion on CelebAMask-HQ) the model absorbs it and the audit under-reports (the ⚠ markers). It needs a competent segmenter, and deciding which group's style is "right" still needs domain knowledge.</p></div>
+    <div class="card"><h3>What it gives</h3><ul class="points"><li>How much error (LER), which way (DR), in which group (RR).</li><li>Thresholds adapt to calibration; temperature scaling leaves the gaps unchanged.</li><li>Validated retrospectively against clean masks.</li></ul></div>
+    <div class="card"><h3>Limits</h3><ul class="points"><li>Measures disagreement, not truth: when the biased style dominates (β = 100 % erosion) the model absorbs it and the audit under-reports.</li><li>Needs a competent segmenter.</li><li>Which style is "right" is still a domain decision.</li></ul></div>
   </div>
 </div></section>
 
@@ -198,33 +171,30 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
 <section id="s4"><div class="wrap">
   <div class="eyebrow"><span class="num">4</span> Subgroup separability</div>
   <h2>Biased labels teach the encoder to tell the groups apart</h2>
-  <p class="narrow">To fit two annotation styles with one decoder, the network must know which style to produce, so it learns the group.
-  In the encoder's latent space, g<sub>c</sub> and g<sub>b</sub> drift apart as the bias grows, well beyond what visual differences cause.</p>
-  <figure><img src="assets/figures/boundary_shift_and_separability.png" alt="Decision boundary shift and PCA/t-SNE/LDA of encoder features"><figcaption><b>Left:</b> biased labels shift the learned decision boundary away from the clean one. <b>Right:</b> PCA, t-SNE and LDA of CelebAMask-HQ encoder features; red is g<sub>b</sub>, blue is g<sub>c</sub>. From unbiased to fully biased, silhouette rises ×3.9 and the Fisher ratio ×8.8.</figcaption></figure>
-  <div class="note"><b>Separability is a symptom, not the disease.</b> Group information in the representation is not itself the fairness problem here; the biased labels are.
-  Methods that erase group information (adversarial, MMD, CORAL) leave the true gap untouched in our experiments, because the labels are still wrong.
-  We make this argument in full in our follow-up preprint <a href="https://arxiv.org/abs/2609.32004"><i>Is invariance all you need for algorithmic fairness? Removing demographic information can create new bias</i></a>: enforcing demographic invariance can hamper mitigation and even create new bias.
-  Here we use the group signal instead of suppressing it.</div>
+  <ul class="points">
+    <li>To fit two styles with one decoder, the network has to know the group, so it learns it.</li>
+    <li>In the encoder's latent space g<sub>c</sub> and g<sub>b</sub> drift apart as bias grows: silhouette ×3.9, Fisher ratio ×8.8 from unbiased to fully biased.</li>
+  </ul>
+  <figure><img src="assets/figures/boundary_shift_and_separability.png" alt="Decision boundary shift and PCA/t-SNE/LDA of encoder features"><figcaption>Left: biased labels shift the learned decision boundary. Right: PCA, t-SNE and LDA of CelebAMask-HQ encoder features; red is g<sub>b</sub>, blue is g<sub>c</sub>.</figcaption></figure>
+  <div class="note"><b>Separability is a symptom, not the fairness problem.</b> Erasing group information (adversarial, MMD, CORAL) leaves the true gap untouched because the labels are still wrong.
+  See our follow-up preprint: <a href="https://arxiv.org/abs/2609.32004"><i>Is invariance all you need for algorithmic fairness? Removing demographic information can create new bias</i></a>. Here we use the group signal instead of suppressing it.</div>
 </div></section>
 
 <!-- 5 -->
 <section id="s5"><div class="wrap">
   <div class="eyebrow"><span class="num">5</span> Mitigation</div>
-  <h2>Learn every style, then predict in the cleanest one</h2>
-  <p class="narrow">The <b>Subgroup-Conditioned Decoder (SCD)</b> feeds a group code into the decoder through FiLM layers, so each annotation
-  style gets its own feature modulation. At inference, every image is decoded with the <i>reference</i> code, and the biased style never leaves training.
-  <b>Auto-SCD</b> removes the need to know the cleaner group: after a few warm-up epochs the group with lower training loss is chosen, because clean labels are easier to fit.</p>
-
+  <h2>Learn every style, predict in the cleanest one</h2>
+  <ul class="points">
+    <li><b>SCD.</b> A group code enters the decoder through FiLM layers; each annotation style gets its own modulation. At inference every image is decoded with the reference code.</li>
+    <li><b>Auto-SCD.</b> Track the training loss per group during warm-up and pick the group with the lowest loss as reference. Clean labels are easier to fit.</li>
+  </ul>
   <div class="card widget">
-    <div class="title"><h3>Auto-SCD in four moves</h3><span class="tag">animation</span></div>
-    <canvas id="m-canvas" width="960" height="340"></canvas>
-    <p id="m-msg" style="margin:10px 0 0;font-weight:500"></p>
+    <div class="title"><h3>Auto-SCD: reference selection from training dynamics</h3><span class="tag">animation</span></div>
+    <canvas id="m-canvas" width="960" height="300"></canvas>
   </div>
-
   <div class="card widget">
-    <div class="title"><h3>Best results per dataset: true IoU and true subgroup gap</h3></div>
+    <div class="title"><h3>Best result per dataset: true IoU and true subgroup gap</h3></div>
     <svg id="m-res" viewBox="0 0 960 300" style="width:100%;height:auto"></svg>
-    <p style="font-size:.88rem;color:var(--muted);margin:8px 0 0">Mean IoU against clean masks (bars) and subgroup IoU gap in percentage points (labels). Fairness regularisers, feature alignment and noise-robust losses barely move the gap in any setting (Table 2 in the paper).</p>
   </div>
 </div></section>
 
@@ -249,7 +219,8 @@ footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
 <script>
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const GC='#3b7dd8', GB='#e4572e', INK='#17365d', EXC='#f28c28', DEF='#1d5fd1', LOST='#d7263d', GREEN='#2a9d6b';
+const GC='#3b7dd8', GB='#e4572e', INK='#1f3a5f', EXC='#ee8a2a', DEF='#2458a6', LOST='#c8273d', GREEN='#2f8f63';
+const FONT='"Source Sans 3",Arial,sans-serif';
 function blobR(t,k){return 1+0.16*Math.sin(3*t+k)+0.07*Math.cos(5*t+2*k)+0.04*Math.sin(7*t);}
 function blobPath(ctx,cx,cy,R,off,k,wave){ctx.beginPath();for(let i=0;i<=120;i++){const t=i/120*2*Math.PI;let r=R*blobR(t,k)+off;if(wave)r+=wave*Math.sin(11*t+k);r=Math.max(r,2);const x=cx+r*Math.cos(t),y=cy+r*Math.sin(t);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.closePath();}
 const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
@@ -261,12 +232,11 @@ function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,
   const c=$('#a1'),ctx=c.getContext('2d');const PERIOD=3.2;
   loop(t=>{
     ctx.clearRect(0,0,c.width,c.height);
-    [[0,'g_c  careful annotator',GC,0],[1,'g_b  over-segmenting annotator',GB,13]].forEach(([row,lab,col,off])=>{
-      const y=row?245:95;ctx.font='600 15px Inter';ctx.fillStyle=col;ctx.fillText(lab,12,y-62);
+    [[0,'g_c   tight annotation',GC,0],[1,'g_b   over-segmenting annotation',GB,13]].forEach(([row,lab,col,off])=>{
+      const y=row?240:92;ctx.font='600 16px '+FONT;ctx.fillStyle=col;ctx.fillText(lab,12,y-60);
       for(let j=0;j<5;j++){
-        const ph=((t/PERIOD)+j*0.37+row*0.5)%1;
-        const cx=120+j*190,R=40,k=j*1.3+row*2.1;
-        ctx.fillStyle='rgba(23,54,93,.3)';blobPath(ctx,cx,y,R,0,k);ctx.fill();
+        const ph=((t/PERIOD)+j*0.37+row*0.5)%1;const cx=120+j*190,R=40,k=j*1.3+row*2.1;
+        ctx.fillStyle='rgba(31,58,95,.3)';blobPath(ctx,cx,y,R,0,k);ctx.fill();
         const prog=Math.min(1,ph/0.7);ctx.strokeStyle=col;ctx.lineWidth=4;ctx.beginPath();
         const n=Math.floor(120*prog);for(let i=0;i<=n;i++){const a=i/120*2*Math.PI;const r=R*blobR(a,k)+off;const x=cx+r*Math.cos(a),yy=y+r*Math.sin(a);i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}
         ctx.stroke();
@@ -274,130 +244,130 @@ function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,
         else{const a=n/120*2*Math.PI;const r=R*blobR(a,k)+off;ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),y+r*Math.sin(a),6,0,7);ctx.fill();}
       }
     });
-    ctx.font='500 13px Inter';ctx.fillStyle=css('--muted');ctx.fillText('same objects, same difficulty: only the annotation style differs between groups',12,322);
   });
 })();
 
-/* 1b. three bias geometries */
-$$('#a2grid canvas').forEach(c=>{const ctx=c.getContext('2d'),m=c.dataset.m;const cx=150,cy=105,R=62,k=1.7;
+/* 1b. bias geometries */
+$$('#a2grid canvas').forEach(c=>{const ctx=c.getContext('2d'),m=c.dataset.m;const cx=150,cy=100,R=60,k=1.7;
   if(m==='dilation'){ctx.fillStyle=EXC;blobPath(ctx,cx,cy,R,14,k);ctx.fill();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,0,k);ctx.fill();}
   else if(m==='erosion'){ctx.fillStyle=LOST;blobPath(ctx,cx,cy,R,0,k);ctx.fill();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,-14,k);ctx.fill();}
   else{ctx.fillStyle=LOST;blobPath(ctx,cx,cy,R,0,k);ctx.fill();ctx.fillStyle=EXC;blobPath(ctx,cx,cy,R,0,k,9);ctx.fill();
     ctx.save();blobPath(ctx,cx,cy,R,0,k);ctx.clip();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,0,k,9);ctx.fill();ctx.restore();}
-  ctx.setLineDash([4,4]);ctx.lineWidth=1.5;ctx.strokeStyle='rgba(23,54,93,.6)';blobPath(ctx,cx,cy,R,0,k);ctx.stroke();ctx.setLineDash([]);
+  ctx.setLineDash([4,4]);ctx.lineWidth=1.5;ctx.strokeStyle='rgba(31,58,95,.6)';blobPath(ctx,cx,cy,R,0,k);ctx.stroke();ctx.setLineDash([]);
 });
 
-/* 2. bent ruler, animated */
+/* 2. bent ruler, three panels animated together */
 (()=>{
   const data={
-    celeba:{x:[0,25,50,75,100],obs:[0.5,6.5,11.5,10,3],tru:[0.3,0.6,6,17,21],ymax:25,msg:'CelebAMask-HQ, erosion. At 100 % bias the observed gap almost vanishes (3 pp) while the true gap is 21 pp: the model has learned the eroded style and agrees with the biased test masks.'},
-    phc:{x:[0,25,50,100],obs:[0.1,1.2,1.8,3.0],tru:[0.1,0.4,1.3,3.8],ymax:4.5,msg:'PhC-U373, coarse annotations. The observed gap overstates at low bias and understates at high bias; it crosses the truth without ever matching it.'},
-    imapp:{x:[0,50,100],obs:[4.5,8.3,9.6],tru:[4.5,19.6,27.5],ymax:30,msg:'IMA++ dermoscopy. The observed gap looks mild (under 10 pp) while the true gap grows to 27.5 pp. Even at zero injected bias there is a natural 4.5 pp gap.'}};
-  let ds='celeba';const svg=$('#r-svg');
-  $('#r-ds').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#r-ds button').forEach(x=>x.classList.remove('on'));b.classList.add('on');ds=b.dataset.d;$('#r-msg').textContent=data[ds].msg;});
-  $('#r-msg').textContent=data.celeba.msg;
+    celeba:{x:[0,25,50,75,100],obs:[0.5,6.5,11.5,10,3],tru:[0.3,0.6,6,17,21],ymax:25},
+    phc:{x:[0,25,50,100],obs:[0.1,1.2,1.8,3.0],tru:[0.1,0.4,1.3,3.8],ymax:4.5},
+    imapp:{x:[0,50,100],obs:[4.5,8.3,9.6],tru:[4.5,19.6,27.5],ymax:30}};
   const interp=(xs,ys,x)=>{for(let i=1;i<xs.length;i++)if(x<=xs[i]){const t=(x-xs[i-1])/(xs[i]-xs[i-1]);return ys[i-1]+(ys[i]-ys[i-1])*t;}return ys[ys.length-1];};
+  const panels=$$('svg.rul');
   loop(t=>{
-    const d=data[ds];const L=70,R=40,T=30,B=60,W=960,H=330;
-    const sx=v=>L+(v/100)*(W-L-R),sy=v=>H-B-(v/d.ymax)*(H-T-B);
-    const ph=(t%6)/6;const bx=ph<0.85?ease(ph/0.85)*100:100;
-    const xs=[];for(let v=0;v<=bx;v+=2)xs.push(v);if(xs[xs.length-1]!==bx)xs.push(bx);
-    const pts=a=>xs.map(v=>sx(v)+','+sy(interp(d.x,a,v))).join(' L');
-    let s=`<g font-family="Inter" font-size="13" fill="${css('--muted')}">`;
-    for(let i=0;i<=4;i++){const v=d.ymax*i/4;s+=`<line x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-10}" y="${sy(v)+4}" text-anchor="end">${v.toFixed(0)}</text>`;}
-    d.x.forEach(v=>s+=`<text x="${sx(v)}" y="${H-B+22}" text-anchor="middle">${v}%</text>`);
-    s+=`<text x="${(L+W-R)/2}" y="${H-10}" text-anchor="middle" font-weight="600">biased labels in g_b (β)</text><text transform="translate(18,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-weight="600">subgroup IoU gap (pp)</text></g>`;
-    s+=`<path d="M${pts(d.tru)} L${xs.slice().reverse().map(v=>sx(v)+','+sy(interp(d.x,d.obs,v))).join(' L')} Z" fill="rgba(215,38,61,.10)"/>`;
-    s+=`<path d="M${pts(d.tru)}" fill="none" stroke="${INK}" stroke-width="4"/>`;
-    s+=`<path d="M${pts(d.obs)}" fill="none" stroke="${LOST}" stroke-width="4" stroke-dasharray="8 6"/>`;
-    const tv=interp(d.x,d.tru,bx),ov=interp(d.x,d.obs,bx),ty=sy(tv),oy=sy(ov);
-    s+=`<line x1="${sx(bx)}" x2="${sx(bx)}" y1="${ty}" y2="${oy}" stroke="${LOST}" stroke-width="2" stroke-dasharray="2 3"/>`;
-    s+=`<circle cx="${sx(bx)}" cy="${ty}" r="7" fill="${INK}"/><rect x="${sx(bx)-7}" y="${oy-7}" width="14" height="14" fill="${LOST}"/>`;
-    s+=`<g font-family="Inter" font-size="13" font-weight="700"><text x="${L+10}" y="${T+4}" fill="${INK}">true gap (clean labels): ${tv.toFixed(1)} pp</text><text x="${L+10}" y="${T+24}" fill="${LOST}">observed gap (biased labels): ${ov.toFixed(1)} pp</text></g>`;
-    const err=ov-tv;s+=`<text x="${W-R}" y="${T+4}" text-anchor="end" font-family="Inter" font-size="13" font-weight="600" fill="${css('--muted')}">ruler ${err>0.5?'overstates by':err<-0.5?'understates by':'off by'} ${Math.abs(err).toFixed(1)} pp</text>`;
-    svg.innerHTML=s;
+    const ph=(t%6)/6;const bx=ph<0.8?ease(ph/0.8)*100:100;
+    panels.forEach(svg=>{
+      const d=data[svg.dataset.d];const L=44,R=12,T=40,B=40,W=320,H=260;
+      const sx=v=>L+(v/100)*(W-L-R),sy=v=>H-B-(v/d.ymax)*(H-T-B);
+      const xs=[];for(let v=0;v<=bx;v+=2)xs.push(v);if(xs[xs.length-1]!==bx)xs.push(bx);
+      const pts=a=>xs.map(v=>sx(v)+','+sy(interp(d.x,a,v))).join(' L');
+      let s=`<g font-family='${FONT}' font-size="11" fill="${css('--muted')}">`;
+      for(let i=0;i<=4;i++){const v=d.ymax*i/4;s+=`<line x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="2 3"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end">${v.toFixed(0)}</text>`;}
+      d.x.forEach(v=>s+=`<text x="${sx(v)}" y="${H-B+16}" text-anchor="middle">${v}%</text>`);
+      s+=`<text x="${(L+W-R)/2}" y="${H-6}" text-anchor="middle" font-weight="600">biased labels in g_b</text><text transform="translate(11,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-weight="600">IoU gap (pp)</text></g>`;
+      s+=`<path d="M${pts(d.tru)} L${xs.slice().reverse().map(v=>sx(v)+','+sy(interp(d.x,d.obs,v))).join(' L')} Z" fill="rgba(200,39,61,.18)"/>`;
+      s+=`<path d="M${pts(d.tru)}" fill="none" stroke="${INK}" stroke-width="3"/><path d="M${pts(d.obs)}" fill="none" stroke="${LOST}" stroke-width="3" stroke-dasharray="6 4"/>`;
+      const tv=interp(d.x,d.tru,bx),ov=interp(d.x,d.obs,bx);
+      s+=`<circle cx="${sx(bx)}" cy="${sy(tv)}" r="5" fill="${INK}"/><rect x="${sx(bx)-5}" y="${sy(ov)-5}" width="10" height="10" fill="${LOST}"/>`;
+      s+=`<g font-family='${FONT}' font-size="12" font-weight="700"><text x="${L+4}" y="14" fill="${INK}">true ${tv.toFixed(1)} pp</text><text x="${L+4}" y="30" fill="${LOST}">observed ${ov.toFixed(1)} pp</text></g>`;
+      svg.innerHTML=s;
+    });
   });
 })();
 
-/* 3. CL walkthrough */
+/* 3. CL schematic (static SVG) */
 (()=>{
-  const c=$('#c-canvas'),ctx=c.getContext('2d');const N=16,S=16;let step=0,auto=true,last=0;
-  const msgs=['The observed training label of one g_b image. It was annotated in the over-segmenting style, so it is too large (the dashed line is the unknown true object).',
-    'A model trained on the other folds predicts this image. It has seen many mostly-correct masks, so its prediction is close to the true object.',
-    'Confident Learning keeps only pixels whose predicted probability clears a per-class threshold. Uncertain boundary pixels (grey) are ignored, so genuinely ambiguous pixels are never counted as errors.',
-    'Among confident pixels, disagreement is split: label says object but model says background (excess, orange); label says background but model says object (deficit, blue).',
-    'Per image: LER = (excess + deficit) / foreground, DR = (excess − deficit) / foreground. Per group: average, then RR = LER_b / LER_c. Here DR is positive, an over-segmentation flag.'];
-  const steps=$$('#c-steps button');steps.forEach((b,i)=>b.onclick=()=>{step=i;auto=false;render();});
-  function cls(x,y){const d=Math.hypot(x-7.5,y-7.5);return{obs:d<=6.2,pred:d<=4.6,conf:Math.abs(d-4.6)>0.55};}
-  function grid(ox,oy,fn,title){ctx.font='600 13px Inter';ctx.fillStyle=css('--ink');ctx.fillText(title,ox,oy-8);
-    for(let y=0;y<N;y++)for(let x=0;x<N;x++){ctx.fillStyle=fn(cls(x,y));ctx.fillRect(ox+x*S,oy+y*S,S-1,S-1);}
-    ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(23,54,93,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(ox+8*S,oy+8*S,4.6*S,0,7);ctx.stroke();ctx.setLineDash([]);}
-  const BG='#f3f1ea',NC='#cfd4dd';
-  function render(){
-    ctx.clearRect(0,0,c.width,c.height);steps.forEach((b,i)=>b.classList.toggle('on',i===step));$('#c-msg').textContent=msgs[step];
-    const oy=36;
-    grid(30,oy,p=>p.obs?GB:BG,'observed label  y_obs');
-    if(step===1)grid(350,oy,p=>p.pred?INK:BG,'cross-fitted prediction');
-    if(step>=2)grid(350,oy,p=>!p.conf?NC:p.pred?INK:BG,'confident prediction  ŷ_CL');
-    if(step>=3)grid(670,oy,p=>!p.conf?NC:(p.obs&&p.pred)?INK:(p.obs&&!p.pred)?EXC:(!p.obs&&p.pred)?DEF:BG,'decomposition');
-    if(step>=4){let exc=0,def=0,fg=0;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const p=cls(x,y);if(!p.conf)continue;if(p.obs&&!p.pred)exc++;else if(!p.obs&&p.pred)def++;if(p.obs||p.pred)fg++;}
-      const yb=oy+N*S+8;ctx.fillStyle='rgba(27,31,42,.88)';rrect(ctx,30,yb,900,30,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 14px Inter';
-      ctx.fillText(`excess ${exc}   deficit ${def}   foreground ${fg}      LER = ${((exc+def)/fg*100).toFixed(0)} %      DR = +${((exc-def)/fg*100).toFixed(0)} %  (over-segmentation)`,44,yb+20);}
-  }
-  render();loop(t=>{if(auto&&t-last>2.6){last=t;step=(step+1)%5;render();}});
+  const F=`font-family='${FONT}'`;const M=css('--muted'),K=css('--ink'),LN=css('--line'),CARD=css('--card');
+  const box=(x,y,w,h,title,sub,col)=>`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="10" fill="${col||CARD}" stroke="${LN}" stroke-width="1.5"/><text x="${x+w/2}" y="${y+24}" text-anchor="middle" ${F} font-size="14" font-weight="700" fill="${K}">${title}</text>${sub?`<text x="${x+w/2}" y="${y+44}" text-anchor="middle" ${F} font-size="12" fill="${M}">${sub}</text>`:''}`;
+  const arr=(x1,y1,x2,y2,lab)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${M}" stroke-width="2" marker-end="url(#ah)"/>${lab?`<text x="${(x1+x2)/2}" y="${Math.min(y1,y2)-8}" text-anchor="middle" ${F} font-size="11" fill="${M}">${lab}</text>`:''}`;
+  let s=`<defs><marker id="ah" markerWidth="10" markerHeight="10" refX="9" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="${M}"/></marker></defs>`;
+  // banner
+  s+=`<rect x="0" y="0" width="960" height="34" rx="8" fill="${css('--orange-soft')}"/><text x="480" y="22" text-anchor="middle" ${F} font-size="14" font-weight="700" fill="#8a4b08">Input: the biased training set only. No clean or held-out reference labels anywhere in this pipeline.</text>`;
+  // folds
+  const fx=20,fy=70;s+=`<text x="${fx}" y="${fy-10}" ${F} font-size="13" font-weight="700" fill="${K}">training set, K = 5 folds</text>`;
+  for(let i=0;i<5;i++){const held=i===1;s+=`<rect x="${fx+i*38}" y="${fy}" width="34" height="50" rx="6" fill="${held?css('--blue-soft'):css('--bg2')}" stroke="${held?DEF:LN}" stroke-width="${held?2:1}"/><text x="${fx+i*38+17}" y="${fy+30}" text-anchor="middle" ${F} font-size="12" fill="${K}">${i+1}</text>`;}
+  s+=`<text x="${fx}" y="${fy+70}" ${F} font-size="11" fill="${M}">train on 4 folds → predict the held-out fold</text><text x="${fx}" y="${fy+86}" ${F} font-size="11" fill="${M}">repeat so every image is predicted out-of-fold</text>`;
+  s+=arr(220,fy+25,262,fy+25);
+  // observed + prediction
+  s+=box(270,fy-6,150,62,'observed label','y_obs, from training set');
+  s+=box(270,fy+70,150,62,'cross-fitted pred.','p(y | x), out-of-fold');
+  s+=arr(420,fy+25,470,fy+40);s+=arr(420,fy+100,470,fy+86);
+  // threshold
+  s+=box(478,fy+36,120,62,'confident?','per-class threshold');
+  s+=arr(598,fy+66,640,fy+66);
+  // Q matrix
+  const qx=650,qy=52,cw=72,ch=52;
+  s+=`<text x="${qx+cw+8}" y="${qy-18}" text-anchor="middle" ${F} font-size="13" font-weight="700" fill="${K}">confident joint Q</text>`;
+  s+=`<text x="${qx+cw/2}" y="${qy-4}" text-anchor="middle" ${F} font-size="11" fill="${M}">pred 0</text><text x="${qx+cw*1.5}" y="${qy-4}" text-anchor="middle" ${F} font-size="11" fill="${M}">pred 1</text>`;
+  s+=`<text x="${qx-6}" y="${qy+ch/2+4}" text-anchor="end" ${F} font-size="11" fill="${M}">label 0</text><text x="${qx-6}" y="${qy+ch*1.5+4}" text-anchor="end" ${F} font-size="11" fill="${M}">label 1</text>`;
+  const cells=[[0,0,css('--bg2'),'agree',K],[1,0,DEF,'deficit','#fff'],[0,1,EXC,'excess','#fff'],[1,1,INK,'agree','#fff']];
+  cells.forEach(([i,j,col,l,tc])=>s+=`<rect x="${qx+i*cw}" y="${qy+j*ch}" width="${cw-2}" height="${ch-2}" rx="6" fill="${col}"/><text x="${qx+i*cw+cw/2-1}" y="${qy+j*ch+ch/2+4}" text-anchor="middle" ${F} font-size="12" font-weight="700" fill="${tc}">${l}</text>`);
+  s+=`<rect x="${qx-3}" y="${qy-3}" width="${2*cw+4}" height="${2*ch+4}" rx="8" fill="none" stroke="${LN}"/>`;
+  s+=`<text x="${qx+cw+8}" y="${qy+2*ch+22}" text-anchor="middle" ${F} font-size="11" fill="${M}">only off-diagonal cells are suspected label errors</text>`;
+  s+=`<text x="${qx+cw+8}" y="${qy+2*ch+38}" text-anchor="middle" ${F} font-size="11" fill="${M}">diagonal = label and model agree</text>`;
+  // bottom: metrics
+  const my=250;
+  s+=arr(qx+cw+8,qy+2*ch+46,qx+cw+8,my-8);
+  s+=`<text x="20" y="${my+8}" ${F} font-size="13" font-weight="700" fill="${K}">assemble per image, average per group</text>`;
+  const mb=(x,title,formula,sub)=>`<rect x="${x}" y="${my+20}" width="290" height="96" rx="10" fill="${CARD}" stroke="${LN}" stroke-width="1.5"/><text x="${x+145}" y="${my+46}" text-anchor="middle" ${F} font-size="15" font-weight="700" fill="${K}">${title}</text><text x="${x+145}" y="${my+70}" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="14" fill="${K}">${formula}</text><text x="${x+145}" y="${my+92}" text-anchor="middle" ${F} font-size="12" fill="${M}">${sub}</text>`;
+  s+=mb(20,'LER: how much','(excess + deficit) / foreground','label error rate of a group');
+  s+=mb(335,'DR: which way','(excess − deficit) / foreground','+ over-segmentation, − under-segmentation');
+  s+=mb(650,'RR: which group','LER(g_b) / LER(g_c)','RR ≫ 1 flags concentration in g_b');
+  s+=`<text x="480" y="${my+140}" text-anchor="middle" ${F} font-size="12" fill="${M}">excess = label 1, model 0 (orange)   ·   deficit = label 0, model 1 (blue)   ·   foreground = confident pixels that are object in label or prediction</text>`;
+  $('#clschema').innerHTML=s;
 })();
 
-/* 5. Auto-SCD animation */
+/* 5. Auto-SCD: training dynamics */
 (()=>{
-  const c=$('#m-canvas'),ctx=c.getContext('2d');const T=[0,3,6,9,12.5];
-  const msgs=['Move 1. Train one encoder and one decoder on all groups, but give the decoder a FiLM group code so it can represent each annotation style separately.',
-    'Move 2. During a short warm-up, track the mean per-sample loss of each group. Clean labels are consistent and easy to fit; corrupted ones are not.',
-    'Move 3. Select the group with the lower warm-up loss as the reference style. On CelebAMask-HQ (50 % erosion): 0.072 vs 0.161, g_c chosen.',
-    'Move 4. At inference, decode every image with the reference code. The biased style is still learned, but never produced. True gap on CelebAMask-HQ: 5.5 pp → 0.5 pp.'];
-  function box(x,y,w,h,label){ctx.fillStyle=css('--card');ctx.strokeStyle=css('--line');ctx.lineWidth=1.5;rrect(ctx,x,y,w,h,12);ctx.fill();ctx.stroke();if(label){ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.textAlign='center';ctx.fillText(label,x+w/2,y+h/2+5);ctx.textAlign='start';}}
-  function arrow(x1,y1,x2,y2){ctx.strokeStyle=css('--muted');ctx.fillStyle=css('--muted');ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-9,y2-5);ctx.lineTo(x2-9,y2+5);ctx.fill();}
+  const c=$('#m-canvas'),ctx=c.getContext('2d');const EP=4,DUR=7;
+  const lossC=e=>0.072+0.11*Math.exp(-1.6*e),lossB=e=>0.161+0.13*Math.exp(-1.1*e);
   loop(t=>{
-    const tt=t%T[4];const stage=tt<T[1]?0:tt<T[2]?1:tt<T[3]?2:3;const u=(tt-T[stage])/(T[stage+1]-T[stage]);
-    ctx.clearRect(0,0,c.width,c.height);$('#m-msg').textContent=msgs[stage];
-    box(30,40,120,50,'image');arrow(150,65,200,65);box(200,40,130,50,'encoder');arrow(330,65,380,65);
-    box(380,20,230,100);ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.textAlign='center';ctx.fillText('decoder + FiLM',495,46);
-    ctx.fillStyle=stage===3?GC:css('--muted');ctx.font='600 13px JetBrains Mono';ctx.fillText('code = '+(stage===3?'g_c (reference)':'g_true'),495,70);ctx.textAlign='start';
-    [[GC,'g_c style',0],[GB,'g_b style',1]].forEach(([col,l,i])=>{ctx.fillStyle=col;ctx.globalAlpha=stage===3&&i===1?.35:1;rrect(ctx,398+i*100,84,94,24,12);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#fff';ctx.font='600 12px Inter';ctx.textAlign='center';ctx.fillText(l,445+i*100,100);ctx.textAlign='start';});
-    arrow(610,65,660,65);box(660,40,120,50,'mask');
-    const py=150;
-    if(stage===0){ctx.fillStyle=css('--muted');ctx.font='500 14px Inter';ctx.fillText('Each training image is decoded with its own group code, so both styles are learned instead of averaged.',30,py+30);
-      [[GC,0,0],[GB,13,1]].forEach(([col,off,i])=>{const cx=160+i*220,cy=py+110,R=42;ctx.fillStyle='rgba(23,54,93,.3)';blobPath(ctx,cx,cy,R,0,1.3+i);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=4;blobPath(ctx,cx,cy,R,off,1.3+i);ctx.stroke();ctx.fillStyle=col;ctx.font='600 13px Inter';ctx.textAlign='center';ctx.fillText(i?'g_b image, g_b code':'g_c image, g_c code',cx,cy+70);ctx.textAlign='start';});}
-    if(stage===1||stage===2){const ep=stage===1?u*4:4;
-      ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.fillText(`warm-up epoch ${ep.toFixed(1)} / 4   mean per-sample loss`,30,py+18);
-      [[GC,'g_c (clean)',0.072,0],[GB,'g_b (50 % eroded)',0.161,1]].forEach(([col,l,L,i])=>{const y=py+45+i*60;const v=stage===1?L*(1.8-0.8*u):L;const w=v/0.3*560;
-        ctx.fillStyle=css('--muted');ctx.font='500 13px Inter';ctx.fillText(l,30,y+18);ctx.fillStyle=col;rrect(ctx,200,y,w,28,7);ctx.fill();ctx.fillStyle=css('--ink');ctx.font='500 13px JetBrains Mono';ctx.fillText(v.toFixed(3),210+w,y+19);
-        if(stage===2&&i===0&&u>0.3){ctx.fillStyle=GREEN;rrect(ctx,200+w+80,y,230,28,7);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 13px Inter';ctx.fillText('✓ selected as reference',200+w+92,y+19);}});}
-    if(stage===3){ctx.fillStyle=css('--muted');ctx.font='500 14px Inter';ctx.fillText('Inference: all images, including g_b, come out in the reference style.',30,py+30);
-      [[GC,0],[GB,1]].forEach(([col,i])=>{const cx=160+i*220,cy=py+110,R=42;ctx.fillStyle='rgba(23,54,93,.3)';blobPath(ctx,cx,cy,R,0,1.3+i);ctx.fill();
-        const off=13*(1-Math.min(1,u*2))*i;ctx.strokeStyle=GC;ctx.lineWidth=4;blobPath(ctx,cx,cy,R,off,1.3+i);ctx.stroke();ctx.fillStyle=col;ctx.font='600 13px Inter';ctx.textAlign='center';ctx.fillText(i?'g_b image, g_c code':'g_c image, g_c code',cx,cy+70);ctx.textAlign='start';});}
-    ctx.fillStyle=css('--line');ctx.fillRect(30,c.height-10,900,4);ctx.fillStyle=INK;ctx.fillRect(30,c.height-10,900*tt/T[4],4);
+    const tt=t%DUR;const prog=Math.min(1,tt/4.5);const e=prog*EP;const done=tt>5;
+    ctx.clearRect(0,0,c.width,c.height);
+    const L=70,R=330,T=30,B=50,W=c.width,H=c.height;
+    const sx=v=>L+v/EP*(W-L-R),sy=v=>H-B-(v/0.32)*(H-T-B);
+    ctx.strokeStyle=css('--line');ctx.lineWidth=1;ctx.font='12px '+FONT;ctx.fillStyle=css('--muted');
+    for(let i=0;i<=4;i++){const v=0.08*i;ctx.beginPath();ctx.moveTo(L,sy(v));ctx.lineTo(W-R,sy(v));ctx.stroke();ctx.textAlign='right';ctx.fillText(v.toFixed(2),L-8,sy(v)+4);}
+    ctx.textAlign='center';for(let i=0;i<=EP;i++)ctx.fillText('epoch '+i,sx(i),H-B+20);
+    ctx.textAlign='left';ctx.font='600 13px '+FONT;ctx.fillStyle=css('--ink');ctx.fillText('mean per-sample training loss, by group',L,T-10);
+    [[GC,lossC,'g_c'],[GB,lossB,'g_b']].forEach(([col,f,l])=>{ctx.strokeStyle=col;ctx.lineWidth=3.5;ctx.beginPath();for(let i=0;i<=100;i++){const x=e*i/100;i?ctx.lineTo(sx(x),sy(f(x))):ctx.moveTo(sx(x),sy(f(x)));}ctx.stroke();
+      ctx.fillStyle=col;ctx.beginPath();ctx.arc(sx(e),sy(f(e)),6,0,7);ctx.fill();ctx.font='600 13px '+FONT;ctx.fillText(`${l}  ${f(e).toFixed(3)}`,sx(e)+12,sy(f(e))+5);});
+    // side panel
+    const px=W-R+30;ctx.fillStyle=css('--bg2');rrect(ctx,px,T,R-40,H-T-B,12);ctx.fill();
+    ctx.fillStyle=css('--ink');ctx.font='700 14px '+FONT;ctx.fillText('after warm-up',px+16,T+28);
+    ctx.font='13px '+FONT;ctx.fillStyle=css('--muted');ctx.fillText('compare mean loss per group',px+16,T+50);
+    [[GC,'g_c',lossC(EP),0],[GB,'g_b',lossB(EP),1]].forEach(([col,l,v,i])=>{const y=T+70+i*34;ctx.fillStyle=col;rrect(ctx,px+16,y,Math.max(4,prog*v/0.2*(R-100)),22,6);ctx.fill();ctx.fillStyle=css('--ink');ctx.font='600 13px '+FONT;ctx.fillText(l,px+16+4,y-4);});
+    if(done){ctx.fillStyle=GREEN;rrect(ctx,px+16,T+150,R-72,34,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 14px '+FONT;ctx.fillText('lowest loss → g_c is the reference',px+28,T+172);}
   });
 })();
 
 /* 5b. best results */
 (()=>{
   const rows=[['CelebAMask-HQ β=50%',93.1,5.5,96.8,0.5,'SCD+Asym'],['CelebAMask-HQ β=100%',82.5,21.0,89.2,9.0,'SCD+Asym'],['PhC-U373',91.2,4.4,92.5,3.2,'Auto-SCD'],['IMA++ β=50%',81.7,19.6,87.4,6.2,'Auto-SCD']];
-  const W=960,L=40,T=40,B=70,H=300,gw=(W-2*L)/rows.length;const sy=v=>T+(1-(v-70)/30)*(H-T-B);let s='';
-  [70,80,90,100].forEach(v=>s+=`<line x1="${L}" x2="${W-L}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end" font-family="Inter" font-size="12" fill="${css('--muted')}">${v}</text>`);
+  const F=`font-family='${FONT}'`;const W=960,L=40,T=40,B=70,H=300,gw=(W-2*L)/rows.length;const sy=v=>T+(1-(v-70)/30)*(H-T-B);let s='';
+  [70,80,90,100].forEach(v=>s+=`<line x1="${L}" x2="${W-L}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end" ${F} font-size="12" fill="${css('--muted')}">${v}</text>`);
   rows.forEach((r,i)=>{const x0=L+i*gw+gw*0.16,bw=gw*0.3;
     [[r[1],r[2],'#9fb3cf','ERM'],[r[3],r[4],INK,r[5]]].forEach(([iou,gap,col,lab],j)=>{const x=x0+j*(bw+12);
       s+=`<rect x="${x}" y="${sy(iou)}" width="${bw}" height="${H-B-sy(iou)}" rx="6" fill="${col}"/>`;
-      s+=`<text x="${x+bw/2}" y="${sy(iou)-20}" text-anchor="middle" font-family="Fraunces" font-size="15" font-weight="700" fill="${col}">${iou.toFixed(1)}</text>`;
-      s+=`<text x="${x+bw/2}" y="${sy(iou)-6}" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="${LOST}">Δ ${gap.toFixed(1)} pp</text>`;
-      s+=`<text x="${x+bw/2}" y="${H-B+16}" text-anchor="middle" font-family="Inter" font-size="11" fill="${css('--muted')}">${lab}</text>`;});
-    s+=`<text x="${L+i*gw+gw/2}" y="${H-B+38}" text-anchor="middle" font-family="Inter" font-size="13" font-weight="600" fill="${css('--ink')}">${r[0]}</text>`;});
-  s+=`<text x="${L}" y="${T-16}" font-family="Inter" font-size="12" font-weight="700" fill="${css('--ink')}">IoU true (%)   <tspan fill="${LOST}">Δ = true subgroup gap, lower is better</tspan></text>`;
+      s+=`<text x="${x+bw/2}" y="${sy(iou)-20}" text-anchor="middle" font-family="Georgia,serif" font-size="15" font-weight="700" fill="${col}">${iou.toFixed(1)}</text>`;
+      s+=`<text x="${x+bw/2}" y="${sy(iou)-6}" text-anchor="middle" ${F} font-size="11" font-weight="700" fill="${LOST}">Δ ${gap.toFixed(1)} pp</text>`;
+      s+=`<text x="${x+bw/2}" y="${H-B+16}" text-anchor="middle" ${F} font-size="11" fill="${css('--muted')}">${lab}</text>`;});
+    s+=`<text x="${L+i*gw+gw/2}" y="${H-B+38}" text-anchor="middle" ${F} font-size="13" font-weight="700" fill="${css('--ink')}">${r[0]}</text>`;});
+  s+=`<text x="${L}" y="${T-16}" ${F} font-size="12" font-weight="700" fill="${css('--ink')}">true IoU (%)   <tspan fill="${LOST}">Δ = true subgroup gap, lower is better</tspan></text>`;
   $('#m-res').innerHTML=s;
 })();
 
-$('#copybib').onclick=()=>{navigator.clipboard.writeText($('#bibtex').textContent).then(()=>{$('#copybib').textContent='Copied ✓';setTimeout(()=>$('#copybib').textContent='Copy',1500);});};
-const navLinks=$$('.storynav a');const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-40% 0px -55% 0px'});
-$$('section[id]').forEach(s=>obs.observe(s));
+$('#copybib').onclick=()=>{navigator.clipboard.writeText($('#bibtex').textContent).then(()=>{$('#copybib').textContent='Copied';setTimeout(()=>$('#copybib').textContent='Copy',1500);});};
 </script>
 </body>
 </html>
