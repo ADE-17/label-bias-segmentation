@@ -14,16 +14,16 @@
 :root{
   --bg:#fdfcf9; --bg2:#f2efe8; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#e1ddd3;
   --navy:#1f3a5f; --blue:#2458a6; --blue-soft:#e3ebf7; --orange:#ee8a2a; --orange-soft:#fbe6cf;
-  --red:#c8273d; --green:#2f8f63; --gold:#d9a93a; --gc:#3b7dd8; --gb:#e4572e;
+  --red:#c8273d; --green:#2f8f63; --gold:#d9a93a; --accent:#c9742a; --accent-soft:#f4d6b8; --gc:#3b7dd8; --gb:#e4572e;
   --radius:14px; --shadow:0 6px 24px rgba(31,35,40,.07);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
   --bg:#14171c; --bg2:#1c2027; --card:#20252d; --ink:#edeff2; --muted:#a4abb6; --line:#2f353f;
-  --blue-soft:#20304a; --orange-soft:#4a3418; --shadow:0 6px 24px rgba(0,0,0,.35);
+  --blue-soft:#20304a; --orange-soft:#4a3418; --accent:#f0a35a; --accent-soft:#5a3d22; --shadow:0 6px 24px rgba(0,0,0,.35);
 }}
 :root[data-theme="dark"]{
   --bg:#14171c; --bg2:#1c2027; --card:#20252d; --ink:#edeff2; --muted:#a4abb6; --line:#2f353f;
-  --blue-soft:#20304a; --orange-soft:#4a3418; --shadow:0 6px 24px rgba(0,0,0,.35);
+  --blue-soft:#20304a; --orange-soft:#4a3418; --accent:#f0a35a; --accent-soft:#5a3d22; --shadow:0 6px 24px rgba(0,0,0,.35);
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Source Sans 3","Helvetica Neue",Arial,sans-serif;line-height:1.55;font-size:18px}
@@ -36,7 +36,7 @@ a{color:var(--blue)}
 .wrap{max-width:1060px;margin:0 auto;padding:0 16px}
 section{padding:56px 0}
 section + section{border-top:1px solid var(--line)}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.eyebrow{display:inline-block;font-weight:700;font-size:1.05rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);margin-bottom:10px;padding-bottom:4px;border-bottom:3px solid var(--accent-soft)}
 .eyebrow .num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--navy);color:#fff;font-family:"Libre Baskerville",serif;font-size:.85rem}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:20px}
 .widget{margin:22px 0}
@@ -63,9 +63,9 @@ ul.points li::before{content:"";position:absolute;left:0;top:.6em;width:10px;hei
 .legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.88rem;color:var(--muted);margin-top:8px}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .hero{padding:56px 0 30px;background:linear-gradient(180deg,var(--bg2),var(--bg));text-align:center;border-bottom:1px solid var(--line)}
-.hero .logo{display:inline-block;background:#fff;border-radius:12px;padding:8px 18px;margin-bottom:14px;box-shadow:var(--shadow)}
-.hero .logo img{height:64px;display:block}
-.hero .venue{display:inline-block;background:var(--navy);color:#fff;padding:5px 14px;border-radius:999px;font-weight:700;font-size:.82rem;letter-spacing:.06em;margin-bottom:16px}
+.hero .logo{display:block;margin:0 auto 18px;width:fit-content}
+.hero .logo img{height:72px;display:block}
+.hero .venue{display:inline-block;background:var(--navy);color:#fff;padding:6px 18px;border-radius:999px;font-weight:700;font-size:.9rem;letter-spacing:.06em;margin:4px 0 8px}
 .people{display:flex;justify-content:center;flex-wrap:wrap;gap:24px;margin:24px 0 8px}
 .person{text-align:center;width:150px}
 .person .ph{width:118px;height:118px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:var(--bg2);border:3px solid var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-family:"Libre Baskerville",serif;font-size:1.8rem;color:var(--navy)}
@@ -90,9 +90,9 @@ td.best{font-weight:700;color:var(--navy)}
 <header class="hero">
   <div class="wrap">
     <div class="logo"><img src="assets/neurips_logo.png" alt="NeurIPS"></div>
-    <span class="venue">Accepted at NeurIPS 2026 · Paris</span>
     <h1>Towards Fairness under Label Bias in Image Segmentation</h1>
-    <p style="font-family:'Libre Baskerville',serif;font-style:italic;font-size:1.2rem;color:var(--muted)">Impact, Measurement and Mitigation</p>
+    <p style="font-family:'Libre Baskerville',serif;font-style:italic;font-size:1.2rem;color:var(--muted);margin-bottom:10px">Impact, Measurement and Mitigation</p>
+    <span class="venue">Accepted at NeurIPS 2026 · Paris</span>
     <div class="people">
       <div class="person"><div class="ph"><img src="assets/authors/aditya_parikh.jpg" alt="Aditya Parikh" onerror="this.parentNode.textContent='AP'"></div><b>Aditya Parikh</b></div>
       <div class="person"><div class="ph"><img src="assets/authors/stella_frank.jpg" alt="Stella Frank" onerror="this.parentNode.textContent='SF'"></div><b>Stella Frank</b></div>
@@ -111,7 +111,7 @@ td.best{font-weight:700;color:var(--navy)}
 
 <!-- 1 -->
 <section id="s1"><div class="wrap">
-  <div class="eyebrow"><span class="num">1</span> Label bias in segmentation</div>
+  <div class="eyebrow">Label bias in segmentation</div>
   <h2>Two groups, two annotation styles</h2>
   <ul class="points">
     <li><span class="chip gc">g<sub>c</sub></span> is annotated with tight, detailed boundaries.</li>
@@ -138,7 +138,7 @@ td.best{font-weight:700;color:var(--navy)}
 
 <!-- 2 -->
 <section id="s2"><div class="wrap">
-  <div class="eyebrow"><span class="num">2</span> The bent ruler</div>
+  <div class="eyebrow">The bent ruler</div>
   <h2>Observed performance does not track true performance</h2>
   <ul class="points">
     <li>IoU is computed against the observed labels, which are the biased ones.</li>
@@ -157,7 +157,7 @@ td.best{font-weight:700;color:var(--navy)}
 
 <!-- 3 -->
 <section id="s3"><div class="wrap">
-  <div class="eyebrow"><span class="num">3</span> Confident Learning as an audit</div>
+  <div class="eyebrow">Confident Learning as an audit</div>
   <h2>Audit the training labels with the training set itself</h2>
   <ul class="points">
     <li><b>No clean labels.</b> Everything below uses only the biased training set and a model trained on it.</li>
@@ -178,7 +178,7 @@ td.best{font-weight:700;color:var(--navy)}
 
 <!-- 4 -->
 <section id="s4"><div class="wrap">
-  <div class="eyebrow"><span class="num">4</span> Subgroup separability</div>
+  <div class="eyebrow">Subgroup separability</div>
   <h2>Biased labels teach the encoder to tell the groups apart</h2>
   <ul class="points">
     <li>To fit two styles with one decoder, the network has to know the group, so it learns it.</li>
@@ -191,7 +191,7 @@ td.best{font-weight:700;color:var(--navy)}
 
 <!-- 5 -->
 <section id="s5"><div class="wrap">
-  <div class="eyebrow"><span class="num">5</span> Mitigation</div>
+  <div class="eyebrow">Mitigation</div>
   <h2>Learn every style, predict in the cleanest one</h2>
   <ul class="points">
     <li><b>SCD.</b> A group code enters the decoder through FiLM layers; each annotation style gets its own modulation. At inference every image is decoded with the reference code.</li>
