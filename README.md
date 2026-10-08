@@ -121,8 +121,7 @@ python -m labelbias.evaluation.feature_analysis --experiments_dir <out>/experime
 
 `docs/` is a static site (no build step). To publish it, enable GitHub Pages in the repository
 settings with source *Deploy from a branch*, branch `main`, folder `/docs`. Author photos go in
-`docs/assets/authors/` as `stella_frank.jpg`, `sneha_das.jpg`, `aasa_feragen.jpg` (square crops;
-missing files fall back to initials).
+`docs/assets/authors/` (square crops; missing files fall back to initials).
 
 ## Citation
 

@@ -7,15 +7,14 @@
 <meta name="description" content="Project page: Towards Fairness under Label Bias in Image Segmentation: Impact, Measurement and Mitigation (NeurIPS 2026).">
 <meta property="og:title" content="Towards Fairness under Label Bias in Image Segmentation">
 <meta property="og:description" content="Auditing and mitigating group-dependent annotation bias in segmentation without clean labels.">
-<meta property="og:image" content="assets/figures/cl_metrics.png">
+<meta property="og:image" content="assets/figures/audit_overview.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{
   --bg:#fbf8f2; --bg2:#f3eee3; --card:#ffffff; --ink:#1b1f2a; --muted:#5b6170; --line:#e4ddcf;
   --navy:#17365d; --blue:#1d5fd1; --blue-soft:#dbe7fb; --orange:#f28c28; --orange-soft:#fde7cf;
-  --red:#d7263d; --green:#2a9d6b; --purple:#7b4fd1; --gold:#e3b23c;
-  --gc:#3b7dd8; --gb:#e4572e;
+  --red:#d7263d; --green:#2a9d6b; --gold:#e3b23c; --gc:#3b7dd8; --gb:#e4572e;
   --radius:18px; --shadow:0 10px 30px rgba(27,31,42,.08);
 }
 @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
@@ -30,707 +29,375 @@
 html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif;line-height:1.6;font-size:17px}
 h1,h2,h3{font-family:Fraunces,Georgia,serif;line-height:1.15;margin:0 0 .4em}
-h1{font-size:clamp(2rem,5vw,3.6rem);font-weight:700;letter-spacing:-.01em}
-h2{font-size:clamp(1.6rem,3.4vw,2.4rem);font-weight:700}
-h3{font-size:1.25rem;font-weight:700}
+h1{font-size:clamp(2rem,5vw,3.4rem);font-weight:700;letter-spacing:-.01em}
+h2{font-size:clamp(1.5rem,3.2vw,2.2rem);font-weight:700}
+h3{font-size:1.2rem;font-weight:700}
 p{margin:0 0 1em}
 a{color:var(--blue)}
-code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:.9em}
-.wrap{max-width:1080px;margin:0 auto;padding:0 16px}
-.narrow{max-width:760px;margin:0 auto}
-section{padding:72px 0}
+.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
+.narrow{max-width:760px}
+section{padding:64px 0}
 section + section{border-top:1px solid var(--line)}
-.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.85rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:.82rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
 .eyebrow .num{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;font-family:Fraunces,serif;font-size:.95rem}
-.lead{font-size:1.15rem;color:var(--muted)}
 .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);padding:22px}
-.widget{margin:28px 0}
+.widget{margin:26px 0}
 .widget .title{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:10px}
 .widget .title h3{margin:0}
-.tag{font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--orange-soft);color:#8a4b08}
-.controls{display:flex;flex-wrap:wrap;gap:16px 26px;align-items:center;margin:12px 0 6px}
-.controls label{display:flex;align-items:center;gap:10px;font-size:.92rem;font-weight:500}
-input[type=range]{accent-color:var(--navy);width:170px}
-button,.btn{font:inherit;font-weight:600;font-size:.92rem;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:.15s}
+.tag{font-size:.72rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px;background:var(--orange-soft);color:#8a4b08}
+button,.btn{font:inherit;font-weight:600;font-size:.9rem;padding:9px 16px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);cursor:pointer;transition:.15s;text-decoration:none}
 button:hover,.btn:hover{border-color:var(--navy);transform:translateY(-1px)}
-button.primary,.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
-button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.btn.primary{background:var(--navy);color:#fff;border-color:var(--navy)}
 .seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden}
 .seg button{border:0;border-radius:0;padding:8px 14px}
 .seg button + button{border-left:1px solid var(--line)}
-.readout{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px}
-.stat{background:var(--bg2);border-radius:12px;padding:10px 14px;min-width:120px}
-.stat .k{font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
-.stat .v{font-family:Fraunces,serif;font-size:1.5rem;font-weight:700}
+.seg button.on{background:var(--navy);color:#fff}
 canvas{display:block;max-width:100%;height:auto;border-radius:12px}
 .grid2{display:grid;grid-template-columns:1fr 1fr;gap:22px}
 .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 @media (max-width:760px){.grid2,.grid3{grid-template-columns:1fr}}
-figure{margin:24px 0}
+figure{margin:22px 0}
 figure img{width:100%;border-radius:12px;border:1px solid var(--line);background:#fff}
 figcaption{font-size:.9rem;color:var(--muted);margin-top:8px}
 .note{border-left:4px solid var(--gold);background:var(--bg2);padding:12px 16px;border-radius:0 12px 12px 0;margin:18px 0}
-.callout{background:linear-gradient(135deg,var(--blue-soft),transparent);border-radius:var(--radius);padding:20px 24px;margin:22px 0}
 .chip{display:inline-block;padding:2px 9px;border-radius:999px;font-size:.8rem;font-weight:600}
 .chip.gc{background:#dce9fb;color:#17467f}.chip.gb{background:#fde0d4;color:#8f2f10}
 .chip.exc{background:var(--orange-soft);color:#8a4b08}.chip.def{background:var(--blue-soft);color:#17467f}
-/* hero */
-.hero{padding:70px 0 40px;background:radial-gradient(1200px 500px at 20% -10%,var(--blue-soft),transparent),radial-gradient(900px 400px at 100% 0,var(--orange-soft),transparent)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:8px}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.hero{padding:64px 0 36px;background:radial-gradient(1200px 500px at 20% -10%,var(--blue-soft),transparent),radial-gradient(900px 400px at 100% 0,var(--orange-soft),transparent);text-align:center}
 .hero .venue{display:inline-block;background:var(--navy);color:#fff;padding:6px 14px;border-radius:999px;font-weight:600;font-size:.85rem;margin-bottom:18px}
-.authors{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:1.05rem;margin:14px 0 6px}
-.authors span{font-weight:500}
-.affil{color:var(--muted);margin-bottom:22px}
-.links{display:flex;flex-wrap:wrap;gap:10px;margin:18px 0}
+.people{display:flex;justify-content:center;flex-wrap:wrap;gap:26px;margin:26px 0 10px}
+.person{text-align:center;width:150px}
+.person .ph{width:120px;height:120px;border-radius:50%;margin:0 auto 10px;overflow:hidden;background:var(--bg2);border:4px solid var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-family:Fraunces,serif;font-size:2rem;font-weight:700;color:var(--navy)}
+.person .ph img{width:100%;height:100%;object-fit:cover}
+.person b{display:block;font-size:1rem;line-height:1.2}
+.affil{color:var(--muted);margin:6px 0 18px}
+.links{display:flex;justify-content:center;flex-wrap:wrap;gap:10px;margin:14px 0}
 .links .btn svg{width:16px;height:16px;vertical-align:-3px;margin-right:6px}
-/* cast */
-.cast{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin:26px 0 0}
-.cast .member{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:10px 12px}
-.cast svg{width:56px;height:56px;flex:none}
-.cast b{display:block}.cast small{color:var(--muted);line-height:1.3;display:block}
-/* story nav */
 .storynav{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .storynav .wrap{display:flex;gap:6px;overflow-x:auto;padding:8px 16px;scrollbar-width:none}
 .storynav a{white-space:nowrap;text-decoration:none;color:var(--muted);font-size:.85rem;font-weight:600;padding:6px 12px;border-radius:999px}
 .storynav a.active,.storynav a:hover{background:var(--navy);color:#fff}
-/* legend */
-.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:8px}
-.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
-/* table */
-table{width:100%;border-collapse:collapse;font-size:.92rem}
-th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left}
-th{font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
-tr.ours td{background:var(--orange-soft)}
-/* authors */
-.people{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:18px}
-.person{text-align:center}
-.person .ph{width:132px;height:132px;border-radius:50%;margin:0 auto 12px;overflow:hidden;background:var(--bg2);border:4px solid var(--card);box-shadow:var(--shadow);display:grid;place-items:center;font-family:Fraunces,serif;font-size:2.2rem;font-weight:700;color:var(--navy)}
-.person .ph img{width:100%;height:100%;object-fit:cover}
-.person b{display:block;font-size:1.05rem}.person small{color:var(--muted)}
-pre.bib{background:#1b1f2a;color:#e9ecf3;padding:18px;border-radius:14px;overflow:auto;font-size:.82rem;line-height:1.5}
-.copy{float:right}
-footer{padding:40px 0 60px;color:var(--muted);font-size:.9rem;text-align:center}
-.flow{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}
-.flow .box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 14px;font-weight:600;font-size:.9rem}
-.flow .arrow{color:var(--muted)}
-.pulse{animation:pulse 1.6s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.steps{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.steps button{padding:7px 12px;font-size:.85rem}
+.steps button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+pre.bib{background:#1b1f2a;color:#e9ecf3;padding:18px;border-radius:14px;overflow:auto;font-size:.82rem;line-height:1.5;position:relative}
+.copy{position:absolute;top:10px;right:10px}
+footer{padding:36px 0 56px;color:var(--muted);font-size:.9rem;text-align:center}
 </style>
 </head>
 <body>
 
-<!-- ===== SVG character sprites ===== -->
-<svg width="0" height="0" style="position:absolute">
-  <defs>
-    <!-- Fin: the meticulous annotator (reference style) -->
-    <symbol id="ch-fin" viewBox="0 0 64 64">
-      <circle cx="32" cy="34" r="22" fill="#ffd9b8"/>
-      <path d="M12 30 Q32 2 52 30 Z" fill="#17365d"/>
-      <circle cx="24" cy="36" r="6" fill="none" stroke="#17365d" stroke-width="2.5"/>
-      <circle cx="40" cy="36" r="6" fill="none" stroke="#17365d" stroke-width="2.5"/>
-      <line x1="30" y1="36" x2="34" y2="36" stroke="#17365d" stroke-width="2.5"/>
-      <circle cx="24" cy="36" r="2" fill="#17365d"/><circle cx="40" cy="36" r="2" fill="#17365d"/>
-      <path d="M25 46 Q32 51 39 46" stroke="#17365d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M48 20 l8 -8" stroke="#3b7dd8" stroke-width="3" stroke-linecap="round"/>
-      <circle cx="46" cy="22" r="4" fill="none" stroke="#3b7dd8" stroke-width="2.5"/>
-    </symbol>
-    <!-- Cole: the quick, coarse annotator (biased style) -->
-    <symbol id="ch-cole" viewBox="0 0 64 64">
-      <circle cx="32" cy="34" r="22" fill="#f3c8a6"/>
-      <path d="M10 28 Q32 6 54 28 L54 24 Q32 0 10 24 Z" fill="#e4572e"/>
-      <rect x="9" y="26" width="46" height="5" rx="2.5" fill="#e4572e"/>
-      <circle cx="24" cy="37" r="2.4" fill="#17365d"/><circle cx="40" cy="37" r="2.4" fill="#17365d"/>
-      <path d="M24 47 Q32 44 40 47" stroke="#17365d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <path d="M50 44 l10 10" stroke="#e4572e" stroke-width="7" stroke-linecap="round"/>
-      <path d="M50 44 l10 10" stroke="#ffd9b8" stroke-width="3" stroke-linecap="round"/>
-    </symbol>
-    <!-- Ruler: the evaluation metric -->
-    <symbol id="ch-ruler" viewBox="0 0 64 64">
-      <rect x="6" y="22" width="52" height="20" rx="4" fill="#e3b23c"/>
-      <g stroke="#17365d" stroke-width="2"><line x1="14" y1="22" x2="14" y2="30"/><line x1="22" y1="22" x2="22" y2="34"/><line x1="30" y1="22" x2="30" y2="30"/><line x1="38" y1="22" x2="38" y2="34"/><line x1="46" y1="22" x2="46" y2="30"/></g>
-      <circle cx="24" cy="37" r="2" fill="#17365d"/><circle cx="40" cy="37" r="2" fill="#17365d"/>
-      <path d="M27 40 Q32 38 37 40" stroke="#17365d" stroke-width="1.8" fill="none"/>
-    </symbol>
-    <!-- CL: the detective -->
-    <symbol id="ch-cl" viewBox="0 0 64 64">
-      <circle cx="32" cy="36" r="20" fill="#ffd9b8"/>
-      <path d="M8 24 h48 l-6 -6 h-36 z" fill="#5a3a1e"/><path d="M18 18 q14 -10 28 0 z" fill="#5a3a1e"/>
-      <circle cx="25" cy="38" r="2.4" fill="#17365d"/><circle cx="39" cy="38" r="2.4" fill="#17365d"/>
-      <path d="M26 47 Q32 50 38 47" stroke="#17365d" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-      <circle cx="50" cy="48" r="8" fill="none" stroke="#17365d" stroke-width="3"/>
-      <line x1="56" y1="54" x2="62" y2="60" stroke="#17365d" stroke-width="4" stroke-linecap="round"/>
-    </symbol>
-    <!-- SCD: the style-conditioned decoder robot -->
-    <symbol id="ch-scd" viewBox="0 0 64 64">
-      <rect x="12" y="16" width="40" height="36" rx="10" fill="#17365d"/>
-      <rect x="20" y="26" width="24" height="12" rx="6" fill="#dbe7fb"/>
-      <circle cx="27" cy="32" r="3" fill="#3b7dd8"/><circle cx="37" cy="32" r="3" fill="#e4572e"/>
-      <rect x="26" y="42" width="12" height="4" rx="2" fill="#dbe7fb"/>
-      <line x1="32" y1="6" x2="32" y2="16" stroke="#17365d" stroke-width="3"/><circle cx="32" cy="6" r="4" fill="#e3b23c"/>
-      <rect x="4" y="30" width="8" height="12" rx="3" fill="#3b7dd8"/><rect x="52" y="30" width="8" height="12" rx="3" fill="#e4572e"/>
-    </symbol>
-  </defs>
-</svg>
-
-<!-- ===== HERO ===== -->
 <header class="hero">
   <div class="wrap">
     <span class="venue">NeurIPS 2026</span>
     <h1>Towards Fairness under Label Bias in Image Segmentation</h1>
-    <p class="lead" style="font-family:Fraunces,serif;font-size:1.35rem">Impact, Measurement and Mitigation</p>
-    <div class="authors">
-      <span>Aditya Parikh</span><span>Stella Frank</span><span>Sneha Das</span><span>Aasa Feragen</span>
+    <p style="font-family:Fraunces,serif;font-size:1.3rem;color:var(--muted)">Impact, Measurement and Mitigation</p>
+    <div class="people">
+      <div class="person"><div class="ph"><img src="assets/authors/aditya_parikh.jpg" alt="Aditya Parikh" onerror="this.parentNode.textContent='AP'"></div><b>Aditya Parikh</b></div>
+      <div class="person"><div class="ph"><img src="assets/authors/stella_frank.jpg" alt="Stella Frank" onerror="this.parentNode.textContent='SF'"></div><b>Stella Frank</b></div>
+      <div class="person"><div class="ph"><img src="assets/authors/sneha_das.jpg" alt="Sneha Das" onerror="this.parentNode.textContent='SD'"></div><b>Sneha Das</b></div>
+      <div class="person"><div class="ph"><img src="assets/authors/aasa_feragen.jpg" alt="Aasa Feragen" onerror="this.parentNode.textContent='AF'"></div><b>Aasa Feragen</b></div>
     </div>
-    <div class="affil">Technical University of Denmark (DTU Compute)</div>
+    <div class="affil">Technical University of Denmark, DTU Compute</div>
     <div class="links">
       <a class="btn primary" href="https://arxiv.org/abs/2605.06891"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9l5 5v15H6z M14 2v6h6"/></svg>arXiv</a>
       <a class="btn" href="https://arxiv.org/pdf/2605.06891"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 4h16v16H4z"/></svg>PDF</a>
       <a class="btn" href="https://github.com/ADE-17/label-bias-segmentation"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5a12 12 0 0 0-3.8 23.4c.6.1.8-.3.8-.6v-2c-3.3.7-4-1.6-4-1.6-.6-1.4-1.4-1.8-1.4-1.8-1.1-.7.1-.7.1-.7 1.2.1 1.8 1.2 1.8 1.2 1.1 1.9 2.9 1.3 3.6 1 .1-.8.4-1.3.8-1.6-2.7-.3-5.5-1.3-5.5-5.9 0-1.3.5-2.4 1.2-3.2-.1-.3-.5-1.5.1-3.2 0 0 1-.3 3.3 1.2a11.5 11.5 0 0 1 6 0c2.3-1.5 3.3-1.2 3.3-1.2.6 1.7.2 2.9.1 3.2.8.8 1.2 1.9 1.2 3.2 0 4.6-2.8 5.6-5.5 5.9.4.4.8 1.1.8 2.2v3.3c0 .3.2.7.8.6A12 12 0 0 0 12 .5z"/></svg>Code</a>
       <a class="btn" href="#cite">BibTeX</a>
     </div>
-    <p class="narrow" style="margin-left:0">
-      When annotation quality or style differs systematically between demographic groups, a segmentation model inherits that
-      <b>label bias</b>. Worse, the usual way to detect it, comparing against clean labels, is exactly what we do not have.
-      This page walks through the paper as a story: what label bias is, why our rulers are bent, how Confident Learning
-      gives us a proxy audit, why biased labels make groups <i>more</i> separable, and how we turn that into a mitigation.
+    <p class="narrow" style="margin:14px auto 0;color:var(--muted)">
+      When annotation style differs systematically between demographic groups, a segmentation model inherits that
+      <b>label bias</b>, and the usual way to detect it, comparing against clean labels, is exactly what we do not have.
     </p>
-
-    <div class="cast">
-      <div class="member"><svg><use href="#ch-fin"/></svg><div><b>Fin</b><small>Careful annotator. Tight, detailed masks. The <span class="chip gc">reference style</span>.</small></div></div>
-      <div class="member"><svg><use href="#ch-cole"/></svg><div><b>Cole</b><small>Fast annotator. Coarse, shifted masks. The <span class="chip gb">biased style</span>.</small></div></div>
-      <div class="member"><svg><use href="#ch-ruler"/></svg><div><b>The Ruler</b><small>Dice / IoU. Only as honest as the labels it measures against.</small></div></div>
-      <div class="member"><svg><use href="#ch-cl"/></svg><div><b>CL</b><small>Confident Learning. Audits labels with the model's confident predictions.</small></div></div>
-      <div class="member"><svg><use href="#ch-scd"/></svg><div><b>SCD</b><small>Subgroup-Conditioned Decoder. Learns every style, predicts in the reference style.</small></div></div>
-    </div>
   </div>
 </header>
 
 <nav class="storynav"><div class="wrap">
-  <a href="#s1">1 Label bias</a><a href="#s2">2 In segmentation</a><a href="#s3">3 The bent ruler</a><a href="#s4">4 Confident Learning</a><a href="#s5">5 Separability</a><a href="#s6">6 Mitigation</a><a href="#s7">7 Takeaways</a><a href="#authors">Authors</a><a href="#cite">Cite</a>
+  <a href="#s1">1 Label bias</a><a href="#s2">2 The bent ruler</a><a href="#s3">3 Confident Learning</a><a href="#s4">4 Separability</a><a href="#s5">5 Mitigation</a><a href="#cite">Cite</a>
 </div></nav>
 
-<!-- ===== 1. LABEL BIAS ===== -->
+<!-- 1 -->
 <section id="s1"><div class="wrap">
-  <div class="eyebrow"><span class="num">1</span> What is label bias?</div>
-  <h2>Two annotators, two groups, one dataset</h2>
-  <p class="narrow" style="margin-left:0">Label <i>noise</i> is random: anyone can make a sloppy mask on a bad day. Label <i>bias</i> is structured:
-  the <b>style or quality of annotations depends on who is in the image</b>. If Fin labels one group and Cole labels the other,
-  the dataset silently encodes "group B objects are bigger" (or smaller) even though the objects are not.</p>
+  <div class="eyebrow"><span class="num">1</span> Label bias in segmentation</div>
+  <h2>Two groups, two annotation styles</h2>
+  <p class="narrow">Images of group <span class="chip gc">g<sub>c</sub></span> are annotated carefully, with tight boundaries.
+  Images of group <span class="chip gb">g<sub>b</sub></span> are annotated by someone who constantly over-segments.
+  Each mask is <i>mostly</i> right, but the error is systematic and tied to the group. That is label bias.</p>
 
   <div class="card widget">
-    <div class="title"><h3>Assign annotators to groups</h3><span class="tag">interactive</span></div>
-    <div class="controls">
-      <label>Fin's boundary offset <input id="w1fin" type="range" min="-10" max="10" value="0"> <span class="mono" id="w1finv">0 px</span></label>
-      <label>Cole's boundary offset <input id="w1cole" type="range" min="-10" max="10" value="7"> <span class="mono" id="w1colev">+7 px</span></label>
-      <button id="w1swap">Swap annotators</button>
-      <button id="w1mix">Mix (no bias)</button>
-    </div>
-    <canvas id="w1c" width="960" height="300"></canvas>
-    <div class="legend"><span><i style="background:#17365d"></i>true object</span><span><i style="background:#3b7dd8"></i>Fin's mask</span><span><i style="background:#e4572e"></i>Cole's mask</span></div>
-    <p id="w1msg" style="margin:10px 0 0;font-weight:500"></p>
+    <div class="title"><h3>Annotating a stream of images</h3><span class="tag">animation</span></div>
+    <canvas id="a1" width="960" height="330"></canvas>
+    <div class="legend"><span><i style="background:#17365d"></i>true object</span><span><i style="background:#3b7dd8"></i>g<sub>c</sub> annotation (tight)</span><span><i style="background:#e4572e"></i>g<sub>b</sub> annotation (over-segmented)</span></div>
   </div>
 
-  <div class="callout"><b>Definition used in the paper.</b> Two groups, <span class="chip gc">g<sub>c</sub></span> (cleaner reference) and
-  <span class="chip gb">g<sub>b</sub></span> (biased). A fraction <b>β</b> of g<sub>b</sub> receives labels in the biased style; g<sub>c</sub> is untouched.
-  β = 0 is the unbiased control, β = 100% is the fully biased dataset.</div>
-</div></section>
-
-<!-- ===== 2. SEGMENTATION ===== -->
-<section id="s2"><div class="wrap">
-  <div class="eyebrow"><span class="num">2</span> Label bias in segmentation</div>
-  <h2>Pixels have geometry, so bias has a direction</h2>
-  <p class="narrow" style="margin-left:0">Unlike a flipped class label, a biased mask is still <i>mostly right</i>. The error lives at the boundary and points
-  somewhere: <span class="chip def">deficit</span> (under-segmentation, e.g. erosion) or <span class="chip exc">excess</span> (over-segmentation,
-  e.g. dilation or "bloated" annotations). We build controlled bias with morphological operations on CelebAMask-HQ, and use naturally occurring
-  annotation styles on PhC-U373 cells and IMA++ dermoscopy.</p>
-
-  <div class="card widget">
-    <div class="title"><h3>Inject boundary bias into group g<sub>b</sub></h3><span class="tag">interactive</span></div>
-    <div class="controls">
-      <label>Operation
-        <span class="seg" id="w2mode"><button data-m="erosion" class="on">Erosion</button><button data-m="dilation">Dilation</button><button data-m="wave">Wave</button></span></label>
-      <label>Radius r <input id="w2r" type="range" min="0" max="20" value="10"> <span class="mono" id="w2rv">10</span></label>
-      <label>Bias ratio β <input id="w2b" type="range" min="0" max="100" step="25" value="50"> <span class="mono" id="w2bv">50%</span></label>
-    </div>
-    <canvas id="w2c" width="960" height="330"></canvas>
-    <div class="legend"><span><i style="background:#17365d"></i>observed mask</span><span><i style="background:#d7263d"></i>foreground lost (deficit)</span><span><i style="background:#f28c28"></i>foreground added (excess)</span><span>Top row: g<sub>c</sub> (always clean). Bottom row: g<sub>b</sub>, a fraction β corrupted.</span></div>
-    <div class="readout">
-      <div class="stat"><div class="k">corrupted samples in g<sub>b</sub></div><div class="v" id="w2n">4 / 8</div></div>
-      <div class="stat"><div class="k">mean foreground change, g<sub>b</sub></div><div class="v" id="w2loss">0%</div></div>
-      <div class="stat"><div class="k">direction</div><div class="v" id="w2dir">deficit</div></div>
-    </div>
+  <p class="narrow">Because pixels have geometry, bias has a <b>direction</b>. The paper studies three: under-segmentation
+  (<span class="chip def">deficit</span>, e.g. erosion), over-segmentation (<span class="chip exc">excess</span>, e.g. dilation or
+  coarse "bloated" masks) and wavy boundary distortion (mixed).</p>
+  <div class="grid3" id="a2grid">
+    <div class="card"><h3>Under-segmentation</h3><canvas width="300" height="210" data-m="erosion"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Eroded mask. Lost foreground in red.</p></div>
+    <div class="card"><h3>Over-segmentation</h3><canvas width="300" height="210" data-m="dilation"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Dilated or bloated mask. Added foreground in orange.</p></div>
+    <div class="card"><h3>Wavy boundary</h3><canvas width="300" height="210" data-m="wave"></canvas><p style="margin:8px 0 0;color:var(--muted);font-size:.9rem">Boundary distortion. Both excess and deficit.</p></div>
   </div>
-
   <div class="grid2">
-    <figure><img src="assets/figures/erosion_grid.png" alt="Erosion radius sweep on a CelebAMask-HQ face mask"><figcaption>Real data. Scaling the erosion radius on a CelebAMask-HQ face mask; the lost foreground is strictly boundary-localised.</figcaption></figure>
-    <figure><img src="assets/figures/phc_clean_vs_biased.png" alt="PhC-U373 fine vs coarse annotations"><figcaption>Real data. PhC-U373 cells: a fine (green) and a coarse "bloated" (red) annotation of the same cell. Tinted images receive the coarse style.</figcaption></figure>
+    <figure><img src="assets/figures/erosion_grid.png" alt="Erosion radius sweep on a CelebAMask-HQ face mask"><figcaption>CelebAMask-HQ: controlled under-segmentation by eroding the face mask with increasing radius.</figcaption></figure>
+    <figure><img src="assets/figures/phc_clean_vs_biased.png" alt="PhC-U373 fine vs coarse annotations"><figcaption>PhC-U373: a fine (green) and a coarse, bloated (red) human annotation of the same cell. Naturally occurring over-segmentation.</figcaption></figure>
   </div>
 </div></section>
 
-<!-- ===== 3. BENT RULER ===== -->
+<!-- 2 -->
+<section id="s2"><div class="wrap">
+  <div class="eyebrow"><span class="num">2</span> The bent ruler</div>
+  <h2>Observed performance does not track true performance</h2>
+  <p class="narrow">Fairness audits compare IoU across groups, computed against the <i>observed</i> labels, the very labels
+  that are biased. A model that reproduces the biased style scores well on the biased test set. The true disparity, visible
+  only with clean labels, can be far larger, far smaller, or move the other way.</p>
+
+  <div class="card widget">
+    <div class="title"><h3>Subgroup IoU gap vs. amount of label bias</h3>
+      <span class="seg" id="r-ds"><button data-d="celeba" class="on">CelebAMask-HQ</button><button data-d="phc">PhC-U373</button><button data-d="imapp">IMA++</button></span></div>
+    <svg id="r-svg" viewBox="0 0 960 330" style="width:100%;height:auto"></svg>
+    <p id="r-msg" style="margin:8px 0 0;color:var(--muted)"></p>
+  </div>
+  <div class="note"><b>Takeaway.</b> Evaluation against observed labels hides label bias rather than detecting it.
+  We need an audit signal that does not require clean labels.</div>
+</div></section>
+
+<!-- 3 -->
 <section id="s3"><div class="wrap">
-  <div class="eyebrow"><span class="num">3</span> The biased ruler</div>
-  <h2>You cannot measure a bent mask with a bent ruler</h2>
-  <p class="narrow" style="margin-left:0">Fairness audits compare Dice or IoU across groups. But those scores are computed against the <i>observed</i> labels,
-  the very labels that are biased. A model that faithfully reproduces Cole's bloated masks scores <b>perfectly</b> on Cole's test set.
-  The true disparity, which only clean labels reveal, can be several times larger, or smaller, or move in the opposite direction.</p>
+  <div class="eyebrow"><span class="num">3</span> Confident Learning as an audit</div>
+  <h2>Confident predictions as a second opinion</h2>
+  <p class="narrow">A model trained with cross-fitting on the biased data is still <b>confident</b> on most pixels, because
+  it has seen many images and most of each mask is correct. Where a confident prediction disagrees with the observed label,
+  we flag a suspected label error and split it by direction.</p>
 
   <div class="card widget">
-    <div class="title"><h3>Subgroup IoU gap as bias increases: what the ruler sees vs. what is true</h3><span class="tag">interactive</span></div>
-    <div class="controls">
-      <span class="seg" id="w3ds"><button data-d="celeba" class="on">CelebAMask-HQ</button><button data-d="phc">PhC-U373</button><button data-d="imapp">IMA++</button></span>
-      <label><input type="checkbox" id="w3oracle"> Reveal the oracle (clean labels)</label>
-    </div>
-    <svg id="w3svg" viewBox="0 0 960 330" style="width:100%;height:auto"></svg>
-    <p id="w3msg" style="margin:8px 0 0"></p>
+    <div class="title"><h3>How the audit works on one image</h3><span class="tag">animation</span></div>
+    <div class="steps" id="c-steps"><button class="on">1 Observed label</button><button>2 Cross-fitted prediction</button><button>3 Keep confident pixels</button><button>4 Decompose disagreement</button><button>5 Summarise</button></div>
+    <canvas id="c-canvas" width="960" height="330"></canvas>
+    <p id="c-msg" style="margin:10px 0 0;font-weight:500"></p>
   </div>
-
-  <div class="card widget">
-    <div class="title"><h3>Why this breaks mitigation research too</h3><span class="tag">CelebAMask-HQ, β = 50%</span></div>
-    <p style="color:var(--muted);margin-bottom:6px">Every method below is scored twice: against the observed (biased) test masks and against clean masks.
-      Click a method. Notice that the observed gap stays near 12 pp for all of them, including the ones that actually fix the problem.</p>
-    <div class="controls" id="w3methods"></div>
-    <svg id="w3bars" viewBox="0 0 960 220" style="width:100%;height:auto"></svg>
-  </div>
-
-  <div class="note"><b>Takeaway.</b> Evaluation against observed labels hides label bias instead of detecting it. We need an audit signal
-  that does not require clean labels at all. Enter the detective.</div>
-</div></section>
-
-<!-- ===== 4. CONFIDENT LEARNING ===== -->
-<section id="s4"><div class="wrap">
-  <div class="eyebrow"><span class="num">4</span> Confident Learning as an audit</div>
-  <h2>Let the model's confident predictions be the second opinion</h2>
-  <p class="narrow" style="margin-left:0">Confident Learning (CL) estimates label errors by comparing observed labels with <b>cross-fitted, confidently
-  predicted</b> labels. We adapt it to segmentation: for each image, confident pixels where observed label and CL prediction disagree are
-  split into <span class="chip exc">excess</span> (label says foreground, model says background) and <span class="chip def">deficit</span>
-  (label says background, model says foreground). Three numbers summarise the audit per group:</p>
 
   <div class="grid3" style="margin:18px 0">
-    <div class="card"><h3>LER</h3><p style="margin:0;color:var(--muted)">Label Error Rate. (excess + deficit) normalised by the foreground. <i>How much</i> suspected error.</p></div>
-    <div class="card"><h3>DR</h3><p style="margin:0;color:var(--muted)">Directional Rate. (excess − deficit) normalised. <i>Which way</i>: positive = over-segmentation, negative = under-segmentation.</p></div>
-    <div class="card"><h3>RR</h3><p style="margin:0;color:var(--muted)">Relative Risk. LER<sub>g<sub>b</sub></sub> / LER<sub>g<sub>c</sub></sub>. <i>Where</i> the errors concentrate. RR ≫ 1 flags a group.</p></div>
+    <div class="card"><h3>LER</h3><p style="margin:0;color:var(--muted)">Label Error Rate: (excess + deficit) / foreground. <i>How much</i> suspected error.</p></div>
+    <div class="card"><h3>DR</h3><p style="margin:0;color:var(--muted)">Directional Rate: (excess − deficit) / foreground. <i>Which way</i>: positive is over-, negative is under-segmentation.</p></div>
+    <div class="card"><h3>RR</h3><p style="margin:0;color:var(--muted)">Relative Risk: LER<sub>g<sub>b</sub></sub> / LER<sub>g<sub>c</sub></sub>. <i>Where</i> errors concentrate; RR ≫ 1 flags a group.</p></div>
   </div>
 
-  <figure><img src="assets/figures/cl_metrics.png" alt="CL decomposition of annotation disagreement"><figcaption>Figure 1 of the paper. Comparison, decomposition into excess / deficit, and assembly into LER, DR and RR.</figcaption></figure>
-
-  <div class="card widget">
-    <div class="title"><h3>Audit a pixel grid</h3><span class="tag">interactive</span></div>
-    <p style="color:var(--muted);margin:0 0 8px">Each panel is one image. The true object is the same in both groups. Shift the observed label of g<sub>b</sub> and watch the detective count. Hover a cell to see its CL class.</p>
-    <div class="controls">
-      <label>g<sub>b</sub> label shift <input id="w4shift" type="range" min="-3" max="3" step="1" value="-2"> <span class="mono" id="w4shiftv">−2 cells (eroded)</span></label>
-      <label>Model confidence band <input id="w4conf" type="range" min="0" max="2" step="0.5" value="0.5"> <span class="mono" id="w4confv">0.5</span></label>
-    </div>
-    <div class="grid2">
-      <div><div style="font-weight:600;margin-bottom:6px"><span class="chip gc">g<sub>c</sub></span> reference group</div><canvas id="w4c0" width="420" height="420"></canvas></div>
-      <div><div style="font-weight:600;margin-bottom:6px"><span class="chip gb">g<sub>b</sub></span> biased group</div><canvas id="w4c1" width="420" height="420"></canvas></div>
-    </div>
-    <div class="legend"><span><i style="background:#17365d"></i>foreground agreement</span><span><i style="background:#f28c28"></i>excess</span><span><i style="background:#1d5fd1"></i>deficit</span><span><i style="background:#cfd4dd"></i>not confident (ignored)</span><span><i style="background:#f3f1ea;border:1px solid #ddd"></i>background agreement</span></div>
-    <div class="readout">
-      <div class="stat"><div class="k">LER g<sub>c</sub> / g<sub>b</sub></div><div class="v" id="w4ler">–</div></div>
-      <div class="stat"><div class="k">DR g<sub>b</sub></div><div class="v" id="w4dr">–</div></div>
-      <div class="stat"><div class="k">RR</div><div class="v" id="w4rr">–</div></div>
-      <div class="stat"><div class="k">verdict</div><div class="v" id="w4verdict" style="font-size:1.1rem">–</div></div>
-    </div>
-  </div>
-
-  <figure><img src="assets/figures/audit_overview.png" alt="Audit results on three datasets"><figcaption>Figure 3 of the paper. Top: the bent ruler on all three datasets (observed vs true gap). Bottom: the CL audit from observed masks only. LER rises in g<sub>b</sub> with β, RR grows beyond the dataset baseline, and DR gives the direction (deficit for erosion, excess for the bloated PhC style).</figcaption></figure>
+  <figure><img src="assets/figures/audit_overview.png" alt="Audit results on three datasets"><figcaption><b>Top:</b> the bent ruler on all three datasets. <b>Bottom:</b> the CL audit computed from observed masks only.
+  LER rises in g<sub>b</sub> with bias, RR grows beyond the unbiased baseline, and DR gives the direction: negative (deficit) for erosion on CelebAMask-HQ, positive (excess) for the bloated PhC-U373 style.</figcaption></figure>
 
   <div class="grid2">
-    <div class="card"><h3>What CL gives us</h3>
-      <ul style="margin:0;padding-left:20px"><li>A <b>proxy audit without clean labels</b>: prevalence (LER), direction (DR), concentration (RR).</li>
-      <li>Robust to global miscalibration: CL thresholds adapt, so temperature scaling leaves the LER and DR gaps unchanged (Table 9).</li>
-      <li>Validated retrospectively against clean masks: detected errors track injected bias in both magnitude and direction (Table 8).</li></ul></div>
-    <div class="card"><h3>Where CL stops</h3>
-      <ul style="margin:0;padding-left:20px"><li><b>Needs a competent model.</b> If the segmenter cannot be confident, nothing is flagged.</li>
-      <li><b>Majority bias is invisible.</b> At β = 100% erosion on CelebA, the model learns the eroded style and CL under-reports it (the ⚠ in the figure). The audit sees <i>disagreement</i>, not truth.</li>
-      <li><b>Style vs. error is a judgement call.</b> RR says where disagreement concentrates; deciding which group's style is "right" needs domain knowledge. Skin tone from ITA is also only a proxy for demographic group.</li></ul></div>
+    <div class="card"><h3>What it means</h3><p style="margin:0;color:var(--muted)">From training data alone we get a proxy audit: how much label error there is, in which group, and in which direction. Thresholds adapt to the model's calibration, so temperature scaling leaves the gaps unchanged, and a retrospective check against clean masks confirms that detected errors track the injected bias.</p></div>
+    <div class="card"><h3>Limitations</h3><p style="margin:0;color:var(--muted)">CL sees <i>disagreement</i>, not truth. If the biased style dominates (β = 100 % erosion on CelebAMask-HQ) the model absorbs it and the audit under-reports (the ⚠ markers). It needs a competent segmenter, and deciding which group's style is "right" still needs domain knowledge.</p></div>
   </div>
 </div></section>
 
-<!-- ===== 5. SEPARABILITY ===== -->
-<section id="s5"><div class="wrap">
-  <div class="eyebrow"><span class="num">5</span> The separability effect</div>
+<!-- 4 -->
+<section id="s4"><div class="wrap">
+  <div class="eyebrow"><span class="num">4</span> Subgroup separability</div>
   <h2>Biased labels teach the encoder to tell the groups apart</h2>
-  <p class="narrow" style="margin-left:0">To fit two annotation styles with one decoder, the network must first know which style to produce. So it learns the group.
-  In the encoder's latent space, g<sub>c</sub> and g<sub>b</sub> drift apart as β grows, far beyond what visual differences alone cause.
-  Most fairness methods try to <i>erase</i> this signal. We do the opposite: it is exactly the handle a mitigation can grab.</p>
-
-  <div class="card widget">
-    <div class="title"><h3>Latent space of the encoder as bias increases</h3><span class="tag">interactive</span></div>
-    <div class="controls">
-      <label>Bias ratio β <input id="w5b" type="range" min="0" max="100" step="1" value="0"> <span class="mono" id="w5bv">0%</span></label>
-      <button id="w5play" class="primary">▶ Animate</button>
-    </div>
-    <div class="grid2">
-      <canvas id="w5c" width="520" height="400"></canvas>
-      <div>
-        <canvas id="w5h" width="520" height="150"></canvas>
-        <div style="font-size:.85rem;color:var(--muted);margin:4px 0 10px">1-D LDA projection of the same points</div>
-        <div class="readout">
-          <div class="stat"><div class="k">Silhouette</div><div class="v" id="w5sil">0.137</div></div>
-          <div class="stat"><div class="k">Fisher ratio</div><div class="v" id="w5fis">0.35</div></div>
-          <div class="stat"><div class="k">Probe accuracy</div><div class="v" id="w5acc">0.93</div></div>
-          <div class="stat"><div class="k">Centroid distance</div><div class="v" id="w5cd">7.5</div></div>
-        </div>
-        <p style="font-size:.85rem;color:var(--muted);margin:10px 0 0">Readouts are the measured values from Table 3 (CelebAMask-HQ, ResNet-34 encoder), interpolated between β ∈ {0, 25, 50, 100}%. Silhouette ×3.9, Fisher ratio ×8.8 from unbiased to fully biased.</p>
-      </div>
-    </div>
-  </div>
-
-  <figure><img src="assets/figures/boundary_shift_and_separability.png" alt="Decision boundary shift and PCA/t-SNE/LDA of encoder features"><figcaption>Figure 2 of the paper. Left: biased labels shift the learned decision boundary away from the clean one. Right: PCA, t-SNE and LDA of encoder features on CelebAMask-HQ; red is g<sub>b</sub>, blue is g<sub>c</sub>. The clusters separate as β increases.</figcaption></figure>
+  <p class="narrow">To fit two annotation styles with one decoder, the network must know which style to produce, so it learns the group.
+  In the encoder's latent space, g<sub>c</sub> and g<sub>b</sub> drift apart as the bias grows, well beyond what visual differences cause.</p>
+  <figure><img src="assets/figures/boundary_shift_and_separability.png" alt="Decision boundary shift and PCA/t-SNE/LDA of encoder features"><figcaption><b>Left:</b> biased labels shift the learned decision boundary away from the clean one. <b>Right:</b> PCA, t-SNE and LDA of CelebAMask-HQ encoder features; red is g<sub>b</sub>, blue is g<sub>c</sub>. From unbiased to fully biased, silhouette rises ×3.9 and the Fisher ratio ×8.8.</figcaption></figure>
+  <div class="note"><b>Separability is a symptom, not the disease.</b> Group information in the representation is not itself the fairness problem here; the biased labels are.
+  Methods that erase group information (adversarial, MMD, CORAL) leave the true gap untouched in our experiments, because the labels are still wrong.
+  We make this argument in full in our follow-up preprint <a href="https://arxiv.org/abs/2609.32004"><i>Is invariance all you need for algorithmic fairness? Removing demographic information can create new bias</i></a>: enforcing demographic invariance can hamper mitigation and even create new bias.
+  Here we use the group signal instead of suppressing it.</div>
 </div></section>
 
-<!-- ===== 6. MITIGATION ===== -->
-<section id="s6"><div class="wrap">
-  <div class="eyebrow"><span class="num">6</span> Mitigation</div>
+<!-- 5 -->
+<section id="s5"><div class="wrap">
+  <div class="eyebrow"><span class="num">5</span> Mitigation</div>
   <h2>Learn every style, then predict in the cleanest one</h2>
-  <p class="narrow" style="margin-left:0">If the model is going to learn annotation styles anyway, make it explicit. The <b>Subgroup-Conditioned Decoder (SCD)</b>
-  injects a group code into the decoder through FiLM layers, so each group's style gets its own set of feature modulations.
-  At inference we <b>condition every image on the reference group</b> g<sub>c</sub>, and the biased style never leaves the training set.
-  <b>Auto-SCD</b> removes the need to know which group is cleaner: after a few warm-up epochs the group with the lower training loss is selected as reference
-  (clean labels are easier to fit than corrupted ones).</p>
+  <p class="narrow">The <b>Subgroup-Conditioned Decoder (SCD)</b> feeds a group code into the decoder through FiLM layers, so each annotation
+  style gets its own feature modulation. At inference, every image is decoded with the <i>reference</i> code, and the biased style never leaves training.
+  <b>Auto-SCD</b> removes the need to know the cleaner group: after a few warm-up epochs the group with lower training loss is chosen, because clean labels are easier to fit.</p>
 
   <div class="card widget">
-    <div class="title"><h3>Conditioning the decoder</h3><span class="tag">interactive</span></div>
-    <div class="flow">
-      <div class="box">image</div><span class="arrow">→</span><div class="box">encoder</div><span class="arrow">→</span>
-      <div class="box" style="border-color:var(--navy)">decoder + FiLM(<span id="w6tok">g<sub>c</sub></span>)</div><span class="arrow">→</span><div class="box">mask</div>
-    </div>
-    <div class="controls">
-      <label>Training phase: <span class="seg" id="w6phase"><button data-p="train" class="on">Train (true group)</button><button data-p="infer">Inference (force reference)</button></span></label>
-      <label>Reference style: <span class="seg" id="w6ref"><button data-r="c" class="on">g<sub>c</sub> (Fin)</button><button data-r="b">g<sub>b</sub> (Cole)</button></span></label>
-    </div>
-    <canvas id="w6c" width="960" height="300"></canvas>
-    <p id="w6msg" style="margin:8px 0 0;font-weight:500"></p>
+    <div class="title"><h3>Auto-SCD in four moves</h3><span class="tag">animation</span></div>
+    <canvas id="m-canvas" width="960" height="340"></canvas>
+    <p id="m-msg" style="margin:10px 0 0;font-weight:500"></p>
   </div>
 
   <div class="card widget">
-    <div class="title"><h3>Auto-SCD picks the reference by warm-up loss</h3><span class="tag">interactive</span></div>
-    <div class="controls"><button id="w6play" class="primary">▶ Run warm-up</button><span style="color:var(--muted);font-size:.9rem">CelebAMask-HQ, erosion 50%, g<sub>b</sub> = female. Mean per-sample loss over 4 warm-up epochs: 0.161 vs 0.072 (Table 16).</span></div>
-    <svg id="w6auto" viewBox="0 0 960 180" style="width:100%;height:auto"></svg>
-  </div>
-
-  <div class="card widget">
-    <div class="title"><h3>Results: true IoU and true subgroup gap</h3><span class="tag">interactive</span></div>
-    <div class="controls"><span class="seg" id="w6ds"><button data-d="c50" class="on">CelebA β=50%</button><button data-d="c100">CelebA β=100%</button><button data-d="phc">PhC-U373</button><button data-d="ima">IMA++ β=50%</button></span></div>
-    <svg id="w6res" viewBox="0 0 960 420" style="width:100%;height:auto"></svg>
-    <p style="font-size:.85rem;color:var(--muted);margin:8px 0 0">Table 2 of the paper. Bars: mean IoU against clean masks (higher is better). Dots: subgroup IoU gap in percentage points (lower is better). Fairness regularisers (EO, DP), alignment (adversarial, MMD, CORAL) and noise-robust losses (GCE, bootstrapping) barely move the gap; subgroup conditioning closes it.</p>
-  </div>
-
-  <div class="grid2">
-    <div class="card"><h3>Headline numbers</h3>
-      <table><thead><tr><th>Setting</th><th>ERM IoU / Δ</th><th>Ours IoU / Δ</th></tr></thead><tbody>
-        <tr><td>CelebA, β=50%</td><td>93.1 / 5.5</td><td>96.8 / 0.5 (SCD+Asym)</td></tr>
-        <tr><td>CelebA, β=100%</td><td>82.5 / 21.0</td><td>89.2 / 9.0 (SCD+Asym)</td></tr>
-        <tr><td>PhC-U373</td><td>91.2 / 4.4</td><td>92.5 / 3.2 (Auto-SCD)</td></tr>
-        <tr><td>IMA++, β=50%</td><td>81.7 / 19.6</td><td>87.4 / 6.2 (Auto-SCD)</td></tr>
-      </tbody></table></div>
-    <div class="card"><h3>What else we checked</h3>
-      <ul style="margin:0;padding-left:20px;color:var(--muted)">
-        <li>Backbones: ResNet-34 and a ViT encoder give the same picture (Table 12).</li>
-        <li>Bias geometries: erosion, dilation, high-boundary distortion and mixed annotator-level bias (Table 15).</li>
-        <li>Auto-SCD selects the right reference in every biased configuration tried, and is harmless when there is no bias (Table 16).</li>
-        <li>Under a training budget, SCD matches a style-separating baseline that needs the reference group given (Table 14).</li>
-      </ul></div>
+    <div class="title"><h3>Best results per dataset: true IoU and true subgroup gap</h3></div>
+    <svg id="m-res" viewBox="0 0 960 300" style="width:100%;height:auto"></svg>
+    <p style="font-size:.88rem;color:var(--muted);margin:8px 0 0">Mean IoU against clean masks (bars) and subgroup IoU gap in percentage points (labels). Fairness regularisers, feature alignment and noise-robust losses barely move the gap in any setting (Table 2 in the paper).</p>
   </div>
 </div></section>
 
-<!-- ===== 7. TAKEAWAYS ===== -->
-<section id="s7"><div class="wrap">
-  <div class="eyebrow"><span class="num">7</span> Takeaways</div>
-  <h2>The story in four lines</h2>
-  <div class="grid2">
-    <div class="card"><h3>1. The ruler is bent</h3><p style="margin:0;color:var(--muted)">Dice and IoU against observed labels hide label bias and cannot see when a mitigation works.</p></div>
-    <div class="card"><h3>2. Audit with confident disagreement</h3><p style="margin:0;color:var(--muted)">CL gives LER, DR and RR from training data alone: how much, which way, and in which group.</p></div>
-    <div class="card"><h3>3. Bias makes groups separable</h3><p style="margin:0;color:var(--muted)">The encoder learns the group to fit the style. Suppressing that signal does not fix the labels.</p></div>
-    <div class="card"><h3>4. Condition, then choose the clean style</h3><p style="margin:0;color:var(--muted)">SCD models the styles explicitly; Auto-SCD finds the reference group from warm-up loss and closes the true gap.</p></div>
-  </div>
-  <div class="note" style="margin-top:26px"><b>Limitations.</b> Conditioning needs annotation style to correlate with group; when styles overlap, gains shrink.
-    CL needs a reasonably good segmenter and under-reports bias that the model has fully absorbed. Skin tone estimated from ITA is an imperfect proxy,
-    and real-world label bias may not look like our synthetic corruptions.</div>
-</div></section>
-
-<!-- ===== AUTHORS ===== -->
-<section id="authors"><div class="wrap">
-  <div class="eyebrow">Authors</div>
-  <h2>Who did this</h2>
-  <div class="people">
-    <!-- To add a photo: drop assets/authors/<file>.jpg (square works best). Missing files fall back to initials. -->
-    <div class="person"><div class="ph"><img src="assets/authors/aditya_parikh.jpg" alt="Aditya Parikh" onerror="this.parentNode.textContent='AP'"></div><b>Aditya Parikh</b><small>DTU Compute</small></div>
-    <div class="person"><div class="ph"><img src="assets/authors/stella_frank.jpg" alt="Stella Frank" onerror="this.parentNode.textContent='SF'"></div><b>Stella Frank</b><small>DTU Compute</small></div>
-    <div class="person"><div class="ph"><img src="assets/authors/sneha_das.jpg" alt="Sneha Das" onerror="this.parentNode.textContent='SD'"></div><b>Sneha Das</b><small>DTU Compute</small></div>
-    <div class="person"><div class="ph"><img src="assets/authors/aasa_feragen.jpg" alt="Aasa Feragen" onerror="this.parentNode.textContent='AF'"></div><b>Aasa Feragen</b><small>DTU Compute</small></div>
-  </div>
-</div></section>
-
-<!-- ===== CITE ===== -->
+<!-- cite -->
 <section id="cite"><div class="wrap">
   <div class="eyebrow">Citation</div>
   <h2>Cite the preprint</h2>
   <p>Preprint: <a href="https://arxiv.org/abs/2605.06891">arXiv:2605.06891</a>. Code, splits, configs and seeds: <a href="https://github.com/ADE-17/label-bias-segmentation">github.com/ADE-17/label-bias-segmentation</a>.</p>
-  <pre class="bib" id="bibtex"><button class="copy" id="copybib">Copy</button>@inproceedings{parikh2026labelbias,
-  title     = {Towards Fairness under Label Bias in Image Segmentation: Impact, Measurement and Mitigation},
-  author    = {Parikh, Aditya and Frank, Stella and Das, Sneha and Feragen, Aasa},
-  booktitle = {Advances in Neural Information Processing Systems (NeurIPS)},
-  year      = {2026},
-  eprint    = {2605.06891},
-  archivePrefix = {arXiv},
-  primaryClass  = {cs.CV},
-  url       = {https://arxiv.org/abs/2605.06891}
-}</pre>
+  <pre class="bib"><button class="copy" id="copybib">Copy</button><code id="bibtex">@misc{parikh2026fairnesslabelbiasimage,
+      title={Towards Fairness under Label Bias in Image Segmentation: Impact, Measurement and Mitigation},
+      author={Aditya Parikh and Stella Frank and Sneha Das and Aasa Feragen},
+      year={2026},
+      eprint={2605.06891},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2605.06891},
+}</code></pre>
 </div></section>
 
-<footer><div class="wrap">Technical University of Denmark · 2026 · Figures reproduced from the paper. Interactive panels are illustrative simulations; numeric readouts marked as such come from the paper's tables.</div></footer>
+<footer><div class="wrap">Technical University of Denmark · 2026 · Static figures are from the paper; animations are illustrative.</div></footer>
 
 <script>
-/* ---------- shared helpers ---------- */
 const $=s=>document.querySelector(s), $$=s=>[...document.querySelectorAll(s)];
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
-const GC='#3b7dd8', GB='#e4572e', INK='#17365d', EXC='#f28c28', DEF='#1d5fd1', LOST='#d7263d';
-function seeded(seed){let s=seed>>>0;return()=>{s=(s*1664525+1013904223)>>>0;return s/4294967296;}}
-function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
-// star-shaped blob radius
+const GC='#3b7dd8', GB='#e4572e', INK='#17365d', EXC='#f28c28', DEF='#1d5fd1', LOST='#d7263d', GREEN='#2a9d6b';
 function blobR(t,k){return 1+0.16*Math.sin(3*t+k)+0.07*Math.cos(5*t+2*k)+0.04*Math.sin(7*t);}
-function blobPath(ctx,cx,cy,R,off,k,wave){
-  ctx.beginPath();
-  for(let i=0;i<=120;i++){const t=i/120*2*Math.PI;let r=R*blobR(t,k)+off;if(wave)r+=wave*Math.sin(11*t+k);r=Math.max(r,2);
-    const x=cx+r*Math.cos(t),y=cy+r*Math.sin(t);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}
-  ctx.closePath();
-}
-function blobArea(R,off,k,wave){let a=0,n=240;for(let i=0;i<n;i++){const t=i/n*2*Math.PI;let r=Math.max(R*blobR(t,k)+off+(wave?wave*Math.sin(11*t+k):0),2);a+=0.5*r*r*(2*Math.PI/n);}return a;}
-function segInit(id,cb){const el=$(id);el.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$(id+' button').forEach(x=>x.classList.remove('on'));b.classList.add('on');cb(b.dataset);});}
-function fitCanvas(c){const dpr=window.devicePixelRatio||1;const w=c.width,h=c.height;c.style.width='100%';return c.getContext('2d');}
+function blobPath(ctx,cx,cy,R,off,k,wave){ctx.beginPath();for(let i=0;i<=120;i++){const t=i/120*2*Math.PI;let r=R*blobR(t,k)+off;if(wave)r+=wave*Math.sin(11*t+k);r=Math.max(r,2);const x=cx+r*Math.cos(t),y=cy+r*Math.sin(t);i?ctx.lineTo(x,y):ctx.moveTo(x,y);}ctx.closePath();}
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+function loop(fn){let t0=performance.now();const step=now=>{fn((now-t0)/1000);requestAnimationFrame(step);};requestAnimationFrame(step);}
+function rrect(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
 
-/* ---------- 1. annotators ---------- */
+/* 1. annotation stream */
 (()=>{
-  const c=$('#w1c'),ctx=c.getContext('2d');let assign={A:'fin',B:'cole'};
-  function draw(){
-    const fin=+$('#w1fin').value,cole=+$('#w1cole').value;
-    $('#w1finv').textContent=(fin>0?'+':'')+fin+' px';$('#w1colev').textContent=(cole>0?'+':'')+cole+' px';
+  const c=$('#a1'),ctx=c.getContext('2d');const PERIOD=3.2;
+  loop(t=>{
     ctx.clearRect(0,0,c.width,c.height);
-    const groups=[['Group A',assign.A,120],['Group B',assign.B,600]];
-    groups.forEach(([name,who,x0])=>{
-      ctx.fillStyle=css('--ink');ctx.font='600 18px Inter';ctx.fillText(name,x0,36);
-      ctx.font='500 14px Inter';ctx.fillStyle=css('--muted');ctx.fillText('annotated by '+(who==='fin'?'Fin':'Cole'),x0,58);
-      for(let j=0;j<3;j++){const cx=x0+60+j*120,cy=190,R=46,k=j*1.3+(x0>300?2:0);
-        ctx.fillStyle='rgba(23,54,93,.25)';blobPath(ctx,cx,cy,R,0,k);ctx.fill();
-        const off=who==='fin'?fin:cole;ctx.lineWidth=3.5;ctx.strokeStyle=who==='fin'?GC:GB;blobPath(ctx,cx,cy,R,off,k);ctx.stroke();
+    [[0,'g_c  careful annotator',GC,0],[1,'g_b  over-segmenting annotator',GB,13]].forEach(([row,lab,col,off])=>{
+      const y=row?245:95;ctx.font='600 15px Inter';ctx.fillStyle=col;ctx.fillText(lab,12,y-62);
+      for(let j=0;j<5;j++){
+        const ph=((t/PERIOD)+j*0.37+row*0.5)%1;
+        const cx=120+j*190,R=40,k=j*1.3+row*2.1;
+        ctx.fillStyle='rgba(23,54,93,.3)';blobPath(ctx,cx,y,R,0,k);ctx.fill();
+        const prog=Math.min(1,ph/0.7);ctx.strokeStyle=col;ctx.lineWidth=4;ctx.beginPath();
+        const n=Math.floor(120*prog);for(let i=0;i<=n;i++){const a=i/120*2*Math.PI;const r=R*blobR(a,k)+off;const x=cx+r*Math.cos(a),yy=y+r*Math.sin(a);i?ctx.lineTo(x,yy):ctx.moveTo(x,yy);}
+        ctx.stroke();
+        if(prog>=1){ctx.fillStyle=col;ctx.globalAlpha=.18;blobPath(ctx,cx,y,R,off,k);ctx.fill();ctx.globalAlpha=1;}
+        else{const a=n/120*2*Math.PI;const r=R*blobR(a,k)+off;ctx.fillStyle=col;ctx.beginPath();ctx.arc(cx+r*Math.cos(a),y+r*Math.sin(a),6,0,7);ctx.fill();}
       }
     });
-    const dA=assign.A==='fin'?fin:cole,dB=assign.B==='fin'?fin:cole,d=dB-dA;
-    let m;if(Math.abs(d)<2)m='Both groups get the same style. Any noise is random, not biased.';
-    else m=`Group B masks are systematically ${d>0?'larger':'smaller'} than Group A by ${Math.abs(d)} px. The dataset now says "Group B objects are ${d>0?'bigger':'smaller'}". That is label bias.`;
-    $('#w1msg').textContent=m;
-  }
-  ['#w1fin','#w1cole'].forEach(s=>$(s).addEventListener('input',draw));
-  $('#w1swap').onclick=()=>{assign={A:assign.B,B:assign.A};draw();};
-  $('#w1mix').onclick=()=>{$('#w1cole').value=0;$('#w1fin').value=0;draw();};
-  draw();
+    ctx.font='500 13px Inter';ctx.fillStyle=css('--muted');ctx.fillText('same objects, same difficulty: only the annotation style differs between groups',12,322);
+  });
 })();
 
-/* ---------- 2. bias injection ---------- */
-(()=>{
-  const c=$('#w2c'),ctx=c.getContext('2d');let mode='erosion';
-  segInit('#w2mode',d=>{mode=d.m;draw();});
-  function draw(){
-    const r=+$('#w2r').value,b=+$('#w2b').value;$('#w2rv').textContent=r;$('#w2bv').textContent=b+'%';
-    ctx.clearRect(0,0,c.width,c.height);const n=8,nb=Math.round(n*b/100);$('#w2n').textContent=nb+' / '+n;
-    let loss=0;
-    [0,1].forEach(row=>{
-      ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.fillText(row?'g_b':'g_c',8,row?190:40);
-      for(let j=0;j<n;j++){const cx=70+j*115,cy=row?245:95,R=38,k=j*0.9+row*3;
-        const corrupt=row===1&&j<nb;
-        if(corrupt){
-          const off=mode==='erosion'?-r*0.9:mode==='dilation'?r*0.9:0,wave=mode==='wave'?r*0.5:0;
-          if(mode==='dilation'){ctx.fillStyle=EXC;blobPath(ctx,cx,cy,R,off,k,wave);ctx.fill();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,0,k);ctx.fill();}
-          else{ctx.fillStyle=LOST;blobPath(ctx,cx,cy,R,0,k);ctx.fill();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,off,k,wave);ctx.fill();
-            if(mode==='wave'){ctx.lineWidth=2;ctx.strokeStyle=EXC;blobPath(ctx,cx,cy,R,off,k,wave);ctx.stroke();}}
-          const a0=blobArea(R,0,k,0),a1=blobArea(R,off,k,wave);loss+=(a1-a0)/a0;
-          ctx.lineWidth=1.5;ctx.strokeStyle='rgba(23,54,93,.5)';ctx.setLineDash([3,3]);blobPath(ctx,cx,cy,R,0,k);ctx.stroke();ctx.setLineDash([]);
-        }else{ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,0,k);ctx.fill();}
-      }
-    });
-    const m=nb?loss/nb*100:0;$('#w2loss').textContent=(m>0?'+':'')+m.toFixed(0)+'%';
-    $('#w2dir').textContent=nb===0||r===0?'none':mode==='erosion'?'deficit':mode==='dilation'?'excess':'mixed';
-  }
-  ['#w2r','#w2b'].forEach(s=>$(s).addEventListener('input',draw));draw();
-})();
+/* 1b. three bias geometries */
+$$('#a2grid canvas').forEach(c=>{const ctx=c.getContext('2d'),m=c.dataset.m;const cx=150,cy=105,R=62,k=1.7;
+  if(m==='dilation'){ctx.fillStyle=EXC;blobPath(ctx,cx,cy,R,14,k);ctx.fill();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,0,k);ctx.fill();}
+  else if(m==='erosion'){ctx.fillStyle=LOST;blobPath(ctx,cx,cy,R,0,k);ctx.fill();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,-14,k);ctx.fill();}
+  else{ctx.fillStyle=LOST;blobPath(ctx,cx,cy,R,0,k);ctx.fill();ctx.fillStyle=EXC;blobPath(ctx,cx,cy,R,0,k,9);ctx.fill();
+    ctx.save();blobPath(ctx,cx,cy,R,0,k);ctx.clip();ctx.fillStyle=INK;blobPath(ctx,cx,cy,R,0,k,9);ctx.fill();ctx.restore();}
+  ctx.setLineDash([4,4]);ctx.lineWidth=1.5;ctx.strokeStyle='rgba(23,54,93,.6)';blobPath(ctx,cx,cy,R,0,k);ctx.stroke();ctx.setLineDash([]);
+});
 
-/* ---------- 3. bent ruler ---------- */
+/* 2. bent ruler, animated */
 (()=>{
   const data={
-    celeba:{x:[0,25,50,75,100],obs:[0.5,6.5,11.5,10,3],tru:[0.3,0.6,6,17,21],ymax:25,
-      msg:'CelebAMask-HQ erosion. At β = 100% the observed gap nearly vanishes (3 pp) while the true gap is 21 pp: the model has learned the eroded style, so it agrees with the biased test masks.'},
-    phc:{x:[0,25,50,100],obs:[0.1,1.2,1.8,3.0],tru:[0.1,0.4,1.3,3.8],ymax:4.5,
-      msg:'PhC-U373 coarse annotations. The observed ruler overstates the gap at low β and understates it at high β; it crosses the truth without ever being right.'},
-    imapp:{x:[0,50,100],obs:[4.5,8.3,9.6],tru:[4.5,19.6,27.5],ymax:30,
-      msg:'IMA++ dermoscopy. The observed gap looks mild (under 10 pp) while the true gap grows to 27.5 pp. Even at β = 0 there is a natural 4.5 pp gap that the CL audit also flags.'}};
-  let ds='celeba';const svg=$('#w3svg');
-  segInit('#w3ds',d=>{ds=d.d;draw();});$('#w3oracle').addEventListener('change',draw);
-  function draw(){
-    const d=data[ds],oracle=$('#w3oracle').checked;const L=70,R=40,T=30,B=60,W=960,H=330;
+    celeba:{x:[0,25,50,75,100],obs:[0.5,6.5,11.5,10,3],tru:[0.3,0.6,6,17,21],ymax:25,msg:'CelebAMask-HQ, erosion. At 100 % bias the observed gap almost vanishes (3 pp) while the true gap is 21 pp: the model has learned the eroded style and agrees with the biased test masks.'},
+    phc:{x:[0,25,50,100],obs:[0.1,1.2,1.8,3.0],tru:[0.1,0.4,1.3,3.8],ymax:4.5,msg:'PhC-U373, coarse annotations. The observed gap overstates at low bias and understates at high bias; it crosses the truth without ever matching it.'},
+    imapp:{x:[0,50,100],obs:[4.5,8.3,9.6],tru:[4.5,19.6,27.5],ymax:30,msg:'IMA++ dermoscopy. The observed gap looks mild (under 10 pp) while the true gap grows to 27.5 pp. Even at zero injected bias there is a natural 4.5 pp gap.'}};
+  let ds='celeba';const svg=$('#r-svg');
+  $('#r-ds').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;$$('#r-ds button').forEach(x=>x.classList.remove('on'));b.classList.add('on');ds=b.dataset.d;$('#r-msg').textContent=data[ds].msg;});
+  $('#r-msg').textContent=data.celeba.msg;
+  const interp=(xs,ys,x)=>{for(let i=1;i<xs.length;i++)if(x<=xs[i]){const t=(x-xs[i-1])/(xs[i]-xs[i-1]);return ys[i-1]+(ys[i]-ys[i-1])*t;}return ys[ys.length-1];};
+  loop(t=>{
+    const d=data[ds];const L=70,R=40,T=30,B=60,W=960,H=330;
     const sx=v=>L+(v/100)*(W-L-R),sy=v=>H-B-(v/d.ymax)*(H-T-B);
-    const path=a=>a.map((v,i)=>(i?'L':'M')+sx(d.x[i])+','+sy(v)).join(' ');
+    const ph=(t%6)/6;const bx=ph<0.85?ease(ph/0.85)*100:100;
+    const xs=[];for(let v=0;v<=bx;v+=2)xs.push(v);if(xs[xs.length-1]!==bx)xs.push(bx);
+    const pts=a=>xs.map(v=>sx(v)+','+sy(interp(d.x,a,v))).join(' L');
     let s=`<g font-family="Inter" font-size="13" fill="${css('--muted')}">`;
     for(let i=0;i<=4;i++){const v=d.ymax*i/4;s+=`<line x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-10}" y="${sy(v)+4}" text-anchor="end">${v.toFixed(0)}</text>`;}
     d.x.forEach(v=>s+=`<text x="${sx(v)}" y="${H-B+22}" text-anchor="middle">${v}%</text>`);
-    s+=`<text x="${(L+W-R)/2}" y="${H-10}" text-anchor="middle" font-weight="600">biased labels in g_b (β)</text>`;
-    s+=`<text transform="translate(18,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-weight="600">subgroup IoU gap (pp)</text></g>`;
-    if(oracle){s+=`<path d="${path(d.tru)} ${d.x.slice().reverse().map((v,i)=>'L'+sx(v)+','+sy(d.obs[d.obs.length-1-i])).join(' ')} Z" fill="rgba(23,54,93,.08)"/>`;}
-    s+=`<path d="${path(d.obs)}" fill="none" stroke="${LOST}" stroke-width="4" stroke-dasharray="8 6"/>`;
-    d.obs.forEach((v,i)=>s+=`<rect x="${sx(d.x[i])-6}" y="${sy(v)-6}" width="12" height="12" fill="${LOST}"/>`);
-    s+=`<text x="${sx(d.x[d.x.length-1])-8}" y="${sy(d.obs[d.obs.length-1])-14}" text-anchor="end" font-family="Inter" font-size="13" font-weight="700" fill="${LOST}">observed gap (what the ruler reports)</text>`;
-    if(oracle){s+=`<path d="${path(d.tru)}" fill="none" stroke="${INK}" stroke-width="4"/>`;d.tru.forEach((v,i)=>s+=`<circle cx="${sx(d.x[i])}" cy="${sy(v)}" r="6" fill="${INK}"/>`);
-      s+=`<text x="${sx(d.x[d.x.length-1])-8}" y="${sy(d.tru[d.tru.length-1])+(ds==='phc'?-14:22)}" text-anchor="end" font-family="Inter" font-size="13" font-weight="700" fill="${INK}">true gap (clean labels)</text>`;}
-    s+=`<use href="#ch-ruler" x="${W-R-70}" y="${T-8}" width="56" height="56"/>`;
+    s+=`<text x="${(L+W-R)/2}" y="${H-10}" text-anchor="middle" font-weight="600">biased labels in g_b (β)</text><text transform="translate(18,${(T+H-B)/2}) rotate(-90)" text-anchor="middle" font-weight="600">subgroup IoU gap (pp)</text></g>`;
+    s+=`<path d="M${pts(d.tru)} L${xs.slice().reverse().map(v=>sx(v)+','+sy(interp(d.x,d.obs,v))).join(' L')} Z" fill="rgba(215,38,61,.10)"/>`;
+    s+=`<path d="M${pts(d.tru)}" fill="none" stroke="${INK}" stroke-width="4"/>`;
+    s+=`<path d="M${pts(d.obs)}" fill="none" stroke="${LOST}" stroke-width="4" stroke-dasharray="8 6"/>`;
+    const tv=interp(d.x,d.tru,bx),ov=interp(d.x,d.obs,bx),ty=sy(tv),oy=sy(ov);
+    s+=`<line x1="${sx(bx)}" x2="${sx(bx)}" y1="${ty}" y2="${oy}" stroke="${LOST}" stroke-width="2" stroke-dasharray="2 3"/>`;
+    s+=`<circle cx="${sx(bx)}" cy="${ty}" r="7" fill="${INK}"/><rect x="${sx(bx)-7}" y="${oy-7}" width="14" height="14" fill="${LOST}"/>`;
+    s+=`<g font-family="Inter" font-size="13" font-weight="700"><text x="${L+10}" y="${T+4}" fill="${INK}">true gap (clean labels): ${tv.toFixed(1)} pp</text><text x="${L+10}" y="${T+24}" fill="${LOST}">observed gap (biased labels): ${ov.toFixed(1)} pp</text></g>`;
+    const err=ov-tv;s+=`<text x="${W-R}" y="${T+4}" text-anchor="end" font-family="Inter" font-size="13" font-weight="600" fill="${css('--muted')}">ruler ${err>0.5?'overstates by':err<-0.5?'understates by':'off by'} ${Math.abs(err).toFixed(1)} pp</text>`;
     svg.innerHTML=s;
-    $('#w3msg').innerHTML=oracle?d.msg:'<i>The ruler is confident. Tick the box to see what it is missing.</i>';
-  }
-  draw();
-  // method bars
-  const methods=[['ERM',5.5,11.5],['Fairness EO',5.7,11.5],['Fairness DP',5.6,11.4],['Adversarial',6.7,11.7],['MMD',6.3,11.9],['CORAL',5.5,11.5],['GCE',6.6,11.6],['Bootstrapping',5.8,11.4],['Asym. mask',7.9,11.5],['SCD (ours)',0.5,12.0],['SCD+Asym (ours)',0.5,12.0]];
-  let sel=0;const box=$('#w3methods');methods.forEach((m,i)=>{const b=document.createElement('button');b.textContent=m[0];if(!i)b.classList.add('on');b.onclick=()=>{sel=i;$$('#w3methods button').forEach(x=>x.classList.remove('on'));b.classList.add('on');bars();};box.appendChild(b);});
-  function bars(){const m=methods[sel];const sx=v=>120+v/14*760;let s='';
-    [['measured with observed (biased) masks',m[2],LOST,70],['measured with clean masks',m[1],INK,140]].forEach(([lab,v,col,y])=>{
-      s+=`<text x="12" y="${y+5}" font-family="Inter" font-size="13" fill="${css('--muted')}">${lab.split(' ')[2]}</text>`;
-      s+=`<rect x="120" y="${y-16}" width="${sx(v)-120}" height="32" rx="8" fill="${col}" style="transition:width .4s"/><text x="${sx(v)+10}" y="${y+5}" font-family="Fraunces" font-size="20" font-weight="700" fill="${col}">${v.toFixed(1)} pp</text>`;
-      s+=`<text x="120" y="${y+34}" font-family="Inter" font-size="12" fill="${css('--muted')}">${lab}</text>`;});
-    s+=`<text x="12" y="30" font-family="Inter" font-size="14" font-weight="700" fill="${css('--ink')}">${m[0]}: subgroup IoU gap</text>`;
-    $('#w3bars').innerHTML=s;}
-  bars();
+  });
 })();
 
-/* ---------- 4. CL pixel audit ---------- */
+/* 3. CL walkthrough */
 (()=>{
-  const N=14,R0=4.3;const c0=$('#w4c0'),c1=$('#w4c1');const cells=(c)=>c.width/N;
-  const rnd=seeded(7);const noise=[];for(let i=0;i<N*N;i++)noise.push(rnd());
-  function classify(shift,conf,isB){
-    const out=[];let exc=0,def=0,fg=0;
-    for(let y=0;y<N;y++)for(let x=0;x<N;x++){const d=Math.hypot(x-6.5,y-6.5);
-      const obs=d<=R0+shift+(isB?0:(noise[y*N+x]<0.06?0.9:0));   // reference has light random noise
-      const pred=d<=R0;const confident=Math.abs(d-R0)>conf*0.5;
-      let cls='bg';if(!confident)cls='nc';else if(obs&&pred)cls='fg';else if(obs&&!pred)cls='exc';else if(!obs&&pred)cls='def';
-      if(cls==='exc')exc++;if(cls==='def')def++;if(cls==='fg'||cls==='exc'||cls==='def')fg++;
-      out.push(cls);}
-    return{out,exc,def,fg,ler:(exc+def)/Math.max(fg,1),dr:(exc-def)/Math.max(fg,1)};
+  const c=$('#c-canvas'),ctx=c.getContext('2d');const N=16,S=16;let step=0,auto=true,last=0;
+  const msgs=['The observed training label of one g_b image. It was annotated in the over-segmenting style, so it is too large (the dashed line is the unknown true object).',
+    'A model trained on the other folds predicts this image. It has seen many mostly-correct masks, so its prediction is close to the true object.',
+    'Confident Learning keeps only pixels whose predicted probability clears a per-class threshold. Uncertain boundary pixels (grey) are ignored, so genuinely ambiguous pixels are never counted as errors.',
+    'Among confident pixels, disagreement is split: label says object but model says background (excess, orange); label says background but model says object (deficit, blue).',
+    'Per image: LER = (excess + deficit) / foreground, DR = (excess − deficit) / foreground. Per group: average, then RR = LER_b / LER_c. Here DR is positive, an over-segmentation flag.'];
+  const steps=$$('#c-steps button');steps.forEach((b,i)=>b.onclick=()=>{step=i;auto=false;render();});
+  function cls(x,y){const d=Math.hypot(x-7.5,y-7.5);return{obs:d<=6.2,pred:d<=4.6,conf:Math.abs(d-4.6)>0.55};}
+  function grid(ox,oy,fn,title){ctx.font='600 13px Inter';ctx.fillStyle=css('--ink');ctx.fillText(title,ox,oy-8);
+    for(let y=0;y<N;y++)for(let x=0;x<N;x++){ctx.fillStyle=fn(cls(x,y));ctx.fillRect(ox+x*S,oy+y*S,S-1,S-1);}
+    ctx.setLineDash([3,3]);ctx.strokeStyle='rgba(23,54,93,.7)';ctx.lineWidth=1.5;ctx.beginPath();ctx.arc(ox+8*S,oy+8*S,4.6*S,0,7);ctx.stroke();ctx.setLineDash([]);}
+  const BG='#f3f1ea',NC='#cfd4dd';
+  function render(){
+    ctx.clearRect(0,0,c.width,c.height);steps.forEach((b,i)=>b.classList.toggle('on',i===step));$('#c-msg').textContent=msgs[step];
+    const oy=36;
+    grid(30,oy,p=>p.obs?GB:BG,'observed label  y_obs');
+    if(step===1)grid(350,oy,p=>p.pred?INK:BG,'cross-fitted prediction');
+    if(step>=2)grid(350,oy,p=>!p.conf?NC:p.pred?INK:BG,'confident prediction  ŷ_CL');
+    if(step>=3)grid(670,oy,p=>!p.conf?NC:(p.obs&&p.pred)?INK:(p.obs&&!p.pred)?EXC:(!p.obs&&p.pred)?DEF:BG,'decomposition');
+    if(step>=4){let exc=0,def=0,fg=0;for(let y=0;y<N;y++)for(let x=0;x<N;x++){const p=cls(x,y);if(!p.conf)continue;if(p.obs&&!p.pred)exc++;else if(!p.obs&&p.pred)def++;if(p.obs||p.pred)fg++;}
+      const yb=oy+N*S+8;ctx.fillStyle='rgba(27,31,42,.88)';rrect(ctx,30,yb,900,30,8);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 14px Inter';
+      ctx.fillText(`excess ${exc}   deficit ${def}   foreground ${fg}      LER = ${((exc+def)/fg*100).toFixed(0)} %      DR = +${((exc-def)/fg*100).toFixed(0)} %  (over-segmentation)`,44,yb+20);}
   }
-  const col={bg:'#f3f1ea',nc:'#cfd4dd',fg:INK,exc:EXC,def:DEF};
-  function paint(c,res,hover){const ctx=c.getContext('2d'),s=cells(c);ctx.clearRect(0,0,c.width,c.height);
-    res.out.forEach((cls,i)=>{const x=i%N,y=(i/N)|0;ctx.fillStyle=col[cls];ctx.fillRect(x*s+1,y*s+1,s-2,s-2);});
-    if(hover!=null){const x=hover%N,y=(hover/N)|0;ctx.strokeStyle=css('--gold');ctx.lineWidth=3;ctx.strokeRect(x*s+1,y*s+1,s-2,s-2);
-      const names={bg:'background agreement',nc:'not confident, ignored',fg:'foreground agreement',exc:'EXCESS: label says object, model says not',def:'DEFICIT: label says background, model says object'};
-      ctx.fillStyle='rgba(27,31,42,.85)';ctx.fillRect(8,c.height-34,c.width-16,26);ctx.fillStyle='#fff';ctx.font='600 13px Inter';ctx.fillText(names[res.out[hover]],16,c.height-16);}
-  }
-  let hov=[null,null];
-  function draw(){
-    const shift=+$('#w4shift').value,conf=+$('#w4conf').value;
-    $('#w4shiftv').textContent=(shift>0?'+':shift<0?'−':'')+Math.abs(shift)+(shift<0?' cells (eroded)':shift>0?' cells (dilated)':' (clean)');$('#w4confv').textContent=conf.toFixed(1);
-    const rc=classify(0,conf,false),rb=classify(shift,conf,true);paint(c0,rc,hov[0]);paint(c1,rb,hov[1]);
-    const rr=(rb.ler+0.01)/(rc.ler+0.01);
-    $('#w4ler').textContent=(rc.ler*100).toFixed(0)+'% / '+(rb.ler*100).toFixed(0)+'%';
-    $('#w4dr').textContent=(rb.dr>0?'+':'')+(rb.dr*100).toFixed(0)+'%';$('#w4rr').textContent=rr.toFixed(1)+'×';
-    $('#w4verdict').textContent=rr<1.5?'no concentrated bias':`errors concentrate in g_b, ${rb.dr<0?'under-segmentation (deficit)':'over-segmentation (excess)'}`;
-  }
-  [c0,c1].forEach((c,i)=>{c.addEventListener('mousemove',e=>{const r=c.getBoundingClientRect();const s=r.width/N;hov[i]=((e.clientY-r.top)/s|0)*N+((e.clientX-r.left)/s|0);draw();});c.addEventListener('mouseleave',()=>{hov[i]=null;draw();});});
-  ['#w4shift','#w4conf'].forEach(s=>$(s).addEventListener('input',draw));draw();
+  render();loop(t=>{if(auto&&t-last>2.6){last=t;step=(step+1)%5;render();}});
 })();
 
-/* ---------- 5. separability ---------- */
+/* 5. Auto-SCD animation */
 (()=>{
-  const c=$('#w5c'),ctx=c.getContext('2d'),h=$('#w5h'),hx=h.getContext('2d');
-  const r=seeded(42),n=260,base=[];for(let g=0;g<2;g++)for(let i=0;i<n;i++)base.push({g,u:gauss(r),v:gauss(r),w:gauss(r)});
-  const T={b:[0,25,50,100],sil:[0.137,0.346,0.412,0.536],fis:[0.352,1.292,1.818,3.100],acc:[0.929,0.968,0.980,0.979],cd:[7.54,13.42,16.84,19.04]};
-  const lerp=(arr,b)=>{for(let i=1;i<T.b.length;i++)if(b<=T.b[i]){const t=(b-T.b[i-1])/(T.b[i]-T.b[i-1]);return arr[i-1]+(arr[i]-arr[i-1])*t;}return arr[arr.length-1];};
-  function draw(){
-    const b=+$('#w5b').value;$('#w5bv').textContent=b+'%';
-    const sep=0.35+2.6*Math.pow(b/100,0.8),spread=1-0.35*(b/100);
-    ctx.clearRect(0,0,c.width,c.height);ctx.fillStyle=css('--bg2');ctx.fillRect(0,0,c.width,c.height);
-    const cx=c.width/2,cy=c.height/2,S=42;
-    base.forEach(p=>{const dir=p.g?1:-1;const x=cx+S*(p.u*spread+dir*sep/2)*Math.cos(0.5)-S*(p.v*spread)*Math.sin(0.5)*0.8;
-      const y=cy+S*(p.u*spread+dir*sep/2)*Math.sin(0.5)*0.6+S*(p.v*spread)*Math.cos(0.5)*0.8;
-      ctx.fillStyle=p.g?GB:GC;ctx.globalAlpha=.65;ctx.beginPath();ctx.arc(x,y,3,0,7);ctx.fill();});
-    ctx.globalAlpha=1;ctx.fillStyle=css('--ink');ctx.font='600 13px Inter';ctx.fillText('encoder latent space (2-D projection)',12,20);
-    ctx.fillStyle=GC;ctx.fillText('g_c',12,40);ctx.fillStyle=GB;ctx.fillText('g_b',44,40);
-    // LDA hist
-    hx.clearRect(0,0,h.width,h.height);hx.fillStyle=css('--bg2');hx.fillRect(0,0,h.width,h.height);
-    const bins=60,H=[new Array(bins).fill(0),new Array(bins).fill(0)];
-    base.forEach(p=>{const dir=p.g?1:-1;const z=p.u*spread+dir*sep/2;const k=Math.min(bins-1,Math.max(0,((z+4)/8*bins)|0));H[p.g][k]++;});
-    const mx=Math.max(...H[0],...H[1]);[0,1].forEach(g=>{hx.fillStyle=g?GB:GC;hx.globalAlpha=.7;H[g].forEach((v,k)=>{const bh=v/mx*(h.height-20);hx.fillRect(k*h.width/bins,h.height-10-bh,h.width/bins-1,bh);});});hx.globalAlpha=1;
-    $('#w5sil').textContent=lerp(T.sil,b).toFixed(3);$('#w5fis').textContent=lerp(T.fis,b).toFixed(2);$('#w5acc').textContent=lerp(T.acc,b).toFixed(3);$('#w5cd').textContent=lerp(T.cd,b).toFixed(1);
-  }
-  $('#w5b').addEventListener('input',draw);draw();
-  let anim=null;$('#w5play').onclick=()=>{if(anim){cancelAnimationFrame(anim);anim=null;$('#w5play').textContent='▶ Animate';return;}
-    let v=0;$('#w5play').textContent='■ Stop';const step=()=>{v+=0.6;if(v>100){v=0;}$('#w5b').value=v|0;draw();anim=requestAnimationFrame(step);};step();};
+  const c=$('#m-canvas'),ctx=c.getContext('2d');const T=[0,3,6,9,12.5];
+  const msgs=['Move 1. Train one encoder and one decoder on all groups, but give the decoder a FiLM group code so it can represent each annotation style separately.',
+    'Move 2. During a short warm-up, track the mean per-sample loss of each group. Clean labels are consistent and easy to fit; corrupted ones are not.',
+    'Move 3. Select the group with the lower warm-up loss as the reference style. On CelebAMask-HQ (50 % erosion): 0.072 vs 0.161, g_c chosen.',
+    'Move 4. At inference, decode every image with the reference code. The biased style is still learned, but never produced. True gap on CelebAMask-HQ: 5.5 pp → 0.5 pp.'];
+  function box(x,y,w,h,label){ctx.fillStyle=css('--card');ctx.strokeStyle=css('--line');ctx.lineWidth=1.5;rrect(ctx,x,y,w,h,12);ctx.fill();ctx.stroke();if(label){ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.textAlign='center';ctx.fillText(label,x+w/2,y+h/2+5);ctx.textAlign='start';}}
+  function arrow(x1,y1,x2,y2){ctx.strokeStyle=css('--muted');ctx.fillStyle=css('--muted');ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.beginPath();ctx.moveTo(x2,y2);ctx.lineTo(x2-9,y2-5);ctx.lineTo(x2-9,y2+5);ctx.fill();}
+  loop(t=>{
+    const tt=t%T[4];const stage=tt<T[1]?0:tt<T[2]?1:tt<T[3]?2:3;const u=(tt-T[stage])/(T[stage+1]-T[stage]);
+    ctx.clearRect(0,0,c.width,c.height);$('#m-msg').textContent=msgs[stage];
+    box(30,40,120,50,'image');arrow(150,65,200,65);box(200,40,130,50,'encoder');arrow(330,65,380,65);
+    box(380,20,230,100);ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.textAlign='center';ctx.fillText('decoder + FiLM',495,46);
+    ctx.fillStyle=stage===3?GC:css('--muted');ctx.font='600 13px JetBrains Mono';ctx.fillText('code = '+(stage===3?'g_c (reference)':'g_true'),495,70);ctx.textAlign='start';
+    [[GC,'g_c style',0],[GB,'g_b style',1]].forEach(([col,l,i])=>{ctx.fillStyle=col;ctx.globalAlpha=stage===3&&i===1?.35:1;rrect(ctx,398+i*100,84,94,24,12);ctx.fill();ctx.globalAlpha=1;ctx.fillStyle='#fff';ctx.font='600 12px Inter';ctx.textAlign='center';ctx.fillText(l,445+i*100,100);ctx.textAlign='start';});
+    arrow(610,65,660,65);box(660,40,120,50,'mask');
+    const py=150;
+    if(stage===0){ctx.fillStyle=css('--muted');ctx.font='500 14px Inter';ctx.fillText('Each training image is decoded with its own group code, so both styles are learned instead of averaged.',30,py+30);
+      [[GC,0,0],[GB,13,1]].forEach(([col,off,i])=>{const cx=160+i*220,cy=py+110,R=42;ctx.fillStyle='rgba(23,54,93,.3)';blobPath(ctx,cx,cy,R,0,1.3+i);ctx.fill();ctx.strokeStyle=col;ctx.lineWidth=4;blobPath(ctx,cx,cy,R,off,1.3+i);ctx.stroke();ctx.fillStyle=col;ctx.font='600 13px Inter';ctx.textAlign='center';ctx.fillText(i?'g_b image, g_b code':'g_c image, g_c code',cx,cy+70);ctx.textAlign='start';});}
+    if(stage===1||stage===2){const ep=stage===1?u*4:4;
+      ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.fillText(`warm-up epoch ${ep.toFixed(1)} / 4   mean per-sample loss`,30,py+18);
+      [[GC,'g_c (clean)',0.072,0],[GB,'g_b (50 % eroded)',0.161,1]].forEach(([col,l,L,i])=>{const y=py+45+i*60;const v=stage===1?L*(1.8-0.8*u):L;const w=v/0.3*560;
+        ctx.fillStyle=css('--muted');ctx.font='500 13px Inter';ctx.fillText(l,30,y+18);ctx.fillStyle=col;rrect(ctx,200,y,w,28,7);ctx.fill();ctx.fillStyle=css('--ink');ctx.font='500 13px JetBrains Mono';ctx.fillText(v.toFixed(3),210+w,y+19);
+        if(stage===2&&i===0&&u>0.3){ctx.fillStyle=GREEN;rrect(ctx,200+w+80,y,230,28,7);ctx.fill();ctx.fillStyle='#fff';ctx.font='700 13px Inter';ctx.fillText('✓ selected as reference',200+w+92,y+19);}});}
+    if(stage===3){ctx.fillStyle=css('--muted');ctx.font='500 14px Inter';ctx.fillText('Inference: all images, including g_b, come out in the reference style.',30,py+30);
+      [[GC,0],[GB,1]].forEach(([col,i])=>{const cx=160+i*220,cy=py+110,R=42;ctx.fillStyle='rgba(23,54,93,.3)';blobPath(ctx,cx,cy,R,0,1.3+i);ctx.fill();
+        const off=13*(1-Math.min(1,u*2))*i;ctx.strokeStyle=GC;ctx.lineWidth=4;blobPath(ctx,cx,cy,R,off,1.3+i);ctx.stroke();ctx.fillStyle=col;ctx.font='600 13px Inter';ctx.textAlign='center';ctx.fillText(i?'g_b image, g_c code':'g_c image, g_c code',cx,cy+70);ctx.textAlign='start';});}
+    ctx.fillStyle=css('--line');ctx.fillRect(30,c.height-10,900,4);ctx.fillStyle=INK;ctx.fillRect(30,c.height-10,900*tt/T[4],4);
+  });
 })();
 
-/* ---------- 6a. SCD conditioning ---------- */
+/* 5b. best results */
 (()=>{
-  const c=$('#w6c'),ctx=c.getContext('2d');let phase='train',ref='c';
-  segInit('#w6phase',d=>{phase=d.p;draw();});segInit('#w6ref',d=>{ref=d.r;draw();});
-  function draw(){
-    ctx.clearRect(0,0,c.width,c.height);
-    const samples=[['g_c',0,'c'],['g_c',1,'c'],['g_b',2,'b'],['g_b',3,'b']];
-    samples.forEach(([lab,j,g])=>{const cx=130+j*230,cy=160,R=52,k=j*1.1;
-      ctx.fillStyle='rgba(23,54,93,.22)';blobPath(ctx,cx,cy,R,0,k);ctx.fill();
-      // observed (training) label
-      const obsOff=g==='b'?-12:0;
-      ctx.setLineDash([4,4]);ctx.lineWidth=2;ctx.strokeStyle=g==='b'?GB:GC;blobPath(ctx,cx,cy,R,obsOff,k);ctx.stroke();ctx.setLineDash([]);
-      // model output
-      const style=phase==='train'?g:ref;const outOff=style==='b'?-12:0;
-      ctx.lineWidth=5;ctx.strokeStyle=style==='b'?GB:GC;blobPath(ctx,cx,cy,R,outOff,k);ctx.stroke();
-      ctx.fillStyle=css('--ink');ctx.font='600 14px Inter';ctx.textAlign='center';ctx.fillText(`image from ${lab}`,cx,cy+90);
-      ctx.font='500 12px Inter';ctx.fillStyle=css('--muted');ctx.fillText(`FiLM code: ${style==='b'?'g_b (Cole style)':'g_c (Fin style)'}`,cx,cy+110);ctx.textAlign='start';});
-    ctx.font='500 13px Inter';ctx.fillStyle=css('--muted');ctx.fillText('dashed = training label (its own style)   solid = decoder output',12,24);
-    $('#w6tok').innerHTML=phase==='train'?'g<sub>true</sub>':(ref==='c'?'g<sub>c</sub>':'g<sub>b</sub>');
-    $('#w6msg').textContent=phase==='train'?'Training: each image is decoded with its own group code, so the decoder learns both styles instead of averaging them. The encoder is shared.'
-      :(ref==='c'?'Inference: every image, including g_b, is decoded in Fin\'s reference style. The eroded style is never produced. True gap on CelebA β=50%: 5.5 pp → 0.5 pp.'
-      :'Inference conditioned on the wrong (biased) style: everything comes out eroded. Choosing the reference matters, which is what Auto-SCD automates. Counterfactual true gap: 5.0 pp.');
-  }
-  draw();
+  const rows=[['CelebAMask-HQ β=50%',93.1,5.5,96.8,0.5,'SCD+Asym'],['CelebAMask-HQ β=100%',82.5,21.0,89.2,9.0,'SCD+Asym'],['PhC-U373',91.2,4.4,92.5,3.2,'Auto-SCD'],['IMA++ β=50%',81.7,19.6,87.4,6.2,'Auto-SCD']];
+  const W=960,L=40,T=40,B=70,H=300,gw=(W-2*L)/rows.length;const sy=v=>T+(1-(v-70)/30)*(H-T-B);let s='';
+  [70,80,90,100].forEach(v=>s+=`<line x1="${L}" x2="${W-L}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-6}" y="${sy(v)+4}" text-anchor="end" font-family="Inter" font-size="12" fill="${css('--muted')}">${v}</text>`);
+  rows.forEach((r,i)=>{const x0=L+i*gw+gw*0.16,bw=gw*0.3;
+    [[r[1],r[2],'#9fb3cf','ERM'],[r[3],r[4],INK,r[5]]].forEach(([iou,gap,col,lab],j)=>{const x=x0+j*(bw+12);
+      s+=`<rect x="${x}" y="${sy(iou)}" width="${bw}" height="${H-B-sy(iou)}" rx="6" fill="${col}"/>`;
+      s+=`<text x="${x+bw/2}" y="${sy(iou)-20}" text-anchor="middle" font-family="Fraunces" font-size="15" font-weight="700" fill="${col}">${iou.toFixed(1)}</text>`;
+      s+=`<text x="${x+bw/2}" y="${sy(iou)-6}" text-anchor="middle" font-family="Inter" font-size="11" font-weight="600" fill="${LOST}">Δ ${gap.toFixed(1)} pp</text>`;
+      s+=`<text x="${x+bw/2}" y="${H-B+16}" text-anchor="middle" font-family="Inter" font-size="11" fill="${css('--muted')}">${lab}</text>`;});
+    s+=`<text x="${L+i*gw+gw/2}" y="${H-B+38}" text-anchor="middle" font-family="Inter" font-size="13" font-weight="600" fill="${css('--ink')}">${r[0]}</text>`;});
+  s+=`<text x="${L}" y="${T-16}" font-family="Inter" font-size="12" font-weight="700" fill="${css('--ink')}">IoU true (%)   <tspan fill="${LOST}">Δ = true subgroup gap, lower is better</tspan></text>`;
+  $('#m-res').innerHTML=s;
 })();
 
-/* ---------- 6b. Auto-SCD warm-up ---------- */
-(()=>{
-  const svg=$('#w6auto');const lossB=0.161,lossC=0.072;let t=0,run=null;
-  function draw(frac,done){const ep=Math.min(4,frac*4);let s='';
-    [['g_b (female, 50% eroded)',lossB,GB,50],['g_c (male, clean)',lossC,GC,115]].forEach(([lab,L,col,y])=>{
-      const v=L*(1.6-0.6*Math.min(1,frac))*(frac>0?1:0);const w=v/0.3*600;
-      s+=`<text x="12" y="${y+5}" font-family="Inter" font-size="13" fill="${css('--muted')}">${lab}</text>`;
-      s+=`<rect x="250" y="${y-14}" width="${w}" height="28" rx="7" fill="${col}"/><text x="${260+w}" y="${y+5}" font-family="JetBrains Mono" font-size="13" fill="${css('--ink')}">${v.toFixed(3)}</text>`;});
-    s+=`<text x="250" y="24" font-family="Inter" font-size="13" font-weight="600" fill="${css('--ink')}">mean per-sample loss, warm-up epoch ${ep.toFixed(1)} / 4</text>`;
-    if(done)s+=`<g><rect x="250" y="140" width="520" height="30" rx="8" fill="${css('--green')}"/><text x="262" y="160" font-family="Inter" font-size="14" font-weight="700" fill="#fff">✓ lowest loss → g_c selected as reference style (AUROC 0.84)</text></g>`;
-    s+=`<use href="#ch-scd" x="880" y="40" width="64" height="64"/>`;svg.innerHTML=s;}
-  draw(0,false);
-  $('#w6play').onclick=()=>{if(run)cancelAnimationFrame(run);t=0;const step=()=>{t+=0.012;draw(Math.min(1,t),t>=1.15);if(t<1.3)run=requestAnimationFrame(step);};step();};
-})();
-
-/* ---------- 6c. results ---------- */
-(()=>{
-  const D={
-    c50:[['ERM',93.1,5.5],['EO',93.0,5.7],['DP',93.0,5.6],['EO+DP',92.8,5.8],['Adversarial',92.4,6.7],['MMD',92.8,6.3],['CORAL',93.2,5.5],['GCE',92.3,6.6],['Bootstrap',92.8,5.8],['Asym',91.5,7.9],['SCD',96.8,0.5,1],['SCD+Asym',96.8,0.5,1],['Auto-SCD',93.7,4.2,1]],
-    c100:[['ERM',82.5,21.0],['EO',82.6,21.0],['DP',82.6,21.0],['EO+DP',82.4,20.9],['Adversarial',82.7,21.1],['MMD',82.8,20.5],['CORAL',82.6,20.9],['GCE',82.5,21.3],['Bootstrap',82.5,21.1],['Asym',79.8,24.7],['SCD',89.0,8.9,1],['SCD+Asym',89.2,9.0,1],['Auto-SCD',85.3,16.1,1]],
-    phc:[['ERM',91.2,4.4],['EO',91.9,3.6],['DP',92.0,3.4],['EO+DP',91.9,3.5],['Adversarial',91.8,3.7],['MMD',91.7,3.9],['CORAL',91.7,3.9],['GCE',91.0,3.9],['Bootstrap',91.0,3.7],['Asym',90.9,5.0],['SCD',91.8,3.6,1],['SCD+Asym',91.1,4.8,1],['Auto-SCD',92.5,3.2,1]],
-    ima:[['ERM',81.7,19.6],['EO',79.8,13.9],['DP',79.6,13.6],['EO+DP',79.9,13.1],['Adversarial',80.3,13.9],['MMD',80.0,13.0],['CORAL',79.7,13.9],['GCE',80.0,14.6],['Bootstrap',80.2,14.7],['Asym',79.7,14.6],['SCD',85.8,6.7,1],['SCD+Asym',86.0,7.0,1],['Auto-SCD',87.4,6.2,1]]};
-  let ds='c50';segInit('#w6ds',d=>{ds=d.d;draw();});
-  function draw(){const rows=D[ds];const W=960,L=60,R=60,T=30,B=70;const bw=(W-L-R)/rows.length;
-    const ious=rows.map(r=>r[1]),gaps=rows.map(r=>r[2]);const i0=Math.floor(Math.min(...ious)/5)*5-5,i1=100;const g1=Math.ceil(Math.max(...gaps)/5)*5;
-    const sy=v=>T+(1-(v-i0)/(i1-i0))*(300-T);const sg=v=>T+(1-v/g1)*(300-T);let s='';
-    for(let i=0;i<=4;i++){const v=i0+(i1-i0)*i/4;s+=`<line x1="${L}" x2="${W-R}" y1="${sy(v)}" y2="${sy(v)}" stroke="${css('--line')}" stroke-dasharray="3 4"/><text x="${L-8}" y="${sy(v)+4}" text-anchor="end" font-family="Inter" font-size="12" fill="${INK}">${v.toFixed(0)}</text><text x="${W-R+8}" y="${sg(g1*i/4)+4}" font-family="Inter" font-size="12" fill="${LOST}">${(g1*i/4).toFixed(0)}</text>`;}
-    s+=`<text x="${L-8}" y="${T-12}" text-anchor="end" font-family="Inter" font-size="12" font-weight="700" fill="${INK}">IoU true (%) ▮</text><text x="${W-R+8}" y="${T-12}" font-family="Inter" font-size="12" font-weight="700" fill="${LOST}">● gap Δ true (pp)</text>`;
-    rows.forEach((r,i)=>{const x=L+i*bw+bw*0.2,w=bw*0.6;const ours=r[3];
-      s+=`<rect x="${x}" y="${sy(r[1])}" width="${w}" height="${300-sy(r[1])}" rx="5" fill="${ours?INK:'#9fb3cf'}"/>`;
-      s+=`<circle cx="${x+w/2}" cy="${sg(r[2])}" r="7" fill="${LOST}" stroke="#fff" stroke-width="2"/>`;
-      s+=`<text x="${x+w/2}" y="${sg(r[2])-12}" text-anchor="middle" font-family="JetBrains Mono" font-size="11" fill="${LOST}">${r[2].toFixed(1)}</text>`;
-      s+=`<text transform="translate(${x+w/2+4},${312}) rotate(35)" font-family="Inter" font-size="12" font-weight="${ours?700:500}" fill="${css('--ink')}">${r[0]}</text>`;});
-    s+=`<rect x="${L+10*bw}" y="${T-4}" width="${3*bw}" height="${300-T+4}" fill="rgba(242,140,40,.12)" rx="8"/><text x="${L+11.5*bw}" y="${T+14}" text-anchor="middle" font-family="Inter" font-size="12" font-weight="700" fill="#8a4b08">ours</text>`;
-    $('#w6res').innerHTML=s;}
-  draw();
-})();
-
-/* ---------- bibtex copy + nav ---------- */
-$('#copybib').onclick=()=>{const t=$('#bibtex').innerText.replace(/^Copy\s*/,'');navigator.clipboard.writeText(t).then(()=>{$('#copybib').textContent='Copied ✓';setTimeout(()=>$('#copybib').textContent='Copy',1500);});};
-const navLinks=$$('.storynav a');const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting){navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));}});},{rootMargin:'-40% 0px -55% 0px'});
-$$('section[id],header[id]').forEach(s=>obs.observe(s));
+$('#copybib').onclick=()=>{navigator.clipboard.writeText($('#bibtex').textContent).then(()=>{$('#copybib').textContent='Copied ✓';setTimeout(()=>$('#copybib').textContent='Copy',1500);});};
+const navLinks=$$('.storynav a');const obs=new IntersectionObserver(es=>{es.forEach(e=>{if(e.isIntersecting)navLinks.forEach(a=>a.classList.toggle('active',a.getAttribute('href')==='#'+e.target.id));});},{rootMargin:'-40% 0px -55% 0px'});
+$$('section[id]').forEach(s=>obs.observe(s));
 </script>
 </body>
 </html>
