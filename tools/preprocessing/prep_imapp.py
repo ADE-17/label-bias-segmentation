@@ -4,7 +4,7 @@ import os
 
 def prep():
     print("Loading metadata...")
-    ita_df = pd.read_csv('../configs/ita_stats_kmeans.csv')
+    ita_df = pd.read_csv('configs/ita_stats_kmeans.csv')
     ita_df['isic_id'] = ita_df['image_path'].apply(lambda x: x.split('/')[-1].split('.')[0])
     
     seg_df = pd.read_csv('/path/to/IMA_dataset/seg_metadata.csv')

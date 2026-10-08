@@ -20,19 +20,19 @@ Supports CelebAMask-HQ and PHC datasets.
 Example usage:
     # Asymmetric masking on CelebA (all folds)
     for FOLD in 0 1 2 3 4; do
-        python train_debias_asym.py --dataset celebamask --method asymmetric \\
+        python -m labelbias.train.scd --dataset celebamask --method asymmetric \\
             --bias_ratio 1.0 --erosion_radius 15 --epochs 20 --fold $FOLD
     done
 
     # Style-conditioned decoder on PHC
     for FOLD in 0 1 2 3 4; do
-        python train_debias_asym.py --dataset phc --method style_cond \\
+        python -m labelbias.train.scd --dataset phc --method style_cond \\
             --bias_ratio 1.0 --epochs 20 --fold $FOLD
     done
 
     # Combined on CelebA
     for FOLD in 0 1 2 3 4; do
-        python train_debias_asym.py --dataset celebamask --method asym_style \\
+        python -m labelbias.train.scd --dataset celebamask --method asym_style \\
             --bias_ratio 0.5 --erosion_radius 15 --epochs 20 --fold $FOLD
     done
 """
@@ -53,12 +53,12 @@ from tqdm import tqdm
 
 import segmentation_models_pytorch as smp
 
-from dataset_factory import (
+from labelbias.data.factory import (
     add_dataset_args, apply_dataset_defaults, create_splits, create_datasets,
     get_demographic_names, DATASET_DEFAULTS,
 )
-from utils.splits import get_fold_indices
-from utils.metrics import SegmentationMetrics
+from labelbias.data.splits import get_fold_indices
+from labelbias.metrics import SegmentationMetrics
 
 
 # ===================================================================

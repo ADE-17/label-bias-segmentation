@@ -11,7 +11,7 @@ echo "=========================================================="
 
 # Force style = 0 (clean style)
 echo "Evaluating with clean style (force_group_id=0)..."
-python evaluate_experiments.py \
+python -m labelbias.evaluation.evaluate \
     --dataset celebamask \
     --experiments celeba_ablation_style_r0.00 celeba_ablation_style_r0.50 \
     --force_group_id 0 \
@@ -19,7 +19,7 @@ python evaluate_experiments.py \
 
 # Force style = 1 (biased style)
 echo "Evaluating with biased style (force_group_id=1)..."
-python evaluate_experiments.py \
+python -m labelbias.evaluation.evaluate \
     --dataset celebamask \
     --experiments celeba_ablation_style_r0.00 celeba_ablation_style_r0.50 \
     --force_group_id 1 \
@@ -30,7 +30,7 @@ echo "Ablation 3: Low Model Quality (ResNet18)"
 echo "=========================================================="
 
 echo "Evaluating standard ERM with ResNet18..."
-python evaluate_experiments.py \
+python -m labelbias.evaluation.evaluate \
     --dataset celebamask \
     --experiments celeba_ablation_erm_resnet18_r0.50 \
     --output_dir $OUT_RESNET18

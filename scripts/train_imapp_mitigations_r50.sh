@@ -24,7 +24,7 @@ BS=32
 echo "Starting training for FOLD $FOLD on $DATASET with bias $BIAS_RATIO"
 
 # 1. ERM Baseline
-python train_imapp_biased.py \
+python -m labelbias.train.imapp_erm \
     --csv_path configs/imapp_processed.csv \
     --epochs $EPOCHS \
     --batch_size $BS \
@@ -34,7 +34,7 @@ python train_imapp_biased.py \
     --fold $FOLD
 
 # 2. Fairness DP
-python train_debiased.py \
+python -m labelbias.train.invariance \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method fairness --fairness_mode dp \
     --epochs $EPOCHS --batch_size $BS \
@@ -42,7 +42,7 @@ python train_debiased.py \
     --fold $FOLD
 
 # 3. Fairness EO
-python train_debiased.py \
+python -m labelbias.train.invariance \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method fairness --fairness_mode eo \
     --epochs $EPOCHS --batch_size $BS \
@@ -50,7 +50,7 @@ python train_debiased.py \
     --fold $FOLD
 
 # 4. Fairness Both
-python train_debiased.py \
+python -m labelbias.train.invariance \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method fairness --fairness_mode both \
     --epochs $EPOCHS --batch_size $BS \
@@ -58,7 +58,7 @@ python train_debiased.py \
     --fold $FOLD
 
 # 5. Adversarial
-python train_debiased.py \
+python -m labelbias.train.invariance \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method adversarial \
     --epochs $EPOCHS --batch_size $BS \
@@ -66,7 +66,7 @@ python train_debiased.py \
     --fold $FOLD
 
 # 6. MMD
-python train_debiased.py \
+python -m labelbias.train.invariance \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method domain_invariant --domain_method mmd_logit \
     --epochs $EPOCHS --batch_size $BS \
@@ -74,7 +74,7 @@ python train_debiased.py \
     --fold $FOLD
 
 # 7. CORAL
-python train_debiased.py \
+python -m labelbias.train.invariance \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method domain_invariant --domain_method coral \
     --epochs $EPOCHS --batch_size $BS \
@@ -82,7 +82,7 @@ python train_debiased.py \
     --fold $FOLD
 
 # 8. GCE
-python train_biased.py \
+python -m labelbias.train.erm \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --loss_mode gce_dice \
     --epochs $EPOCHS --batch_size $BS \
@@ -90,7 +90,7 @@ python train_biased.py \
     --fold $FOLD
 
 # 9. Bootstrapping
-python train_biased.py \
+python -m labelbias.train.erm \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --loss_mode bootstrapping_dice \
     --epochs $EPOCHS --batch_size $BS \
@@ -98,7 +98,7 @@ python train_biased.py \
     --fold $FOLD
 
 # 10. Auto-conditioned
-python train_hybrid_moe.py \
+python -m labelbias.train.auto_scd \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --encoder resnet34 \
     --epochs $EPOCHS --batch_size $BS \
@@ -106,7 +106,7 @@ python train_hybrid_moe.py \
     --fold $FOLD
 
 # 11. Style Conditioned
-python train_debias_asym.py \
+python -m labelbias.train.scd \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method style_cond \
     --epochs $EPOCHS --batch_size $BS \
@@ -114,7 +114,7 @@ python train_debias_asym.py \
     --fold $FOLD
 
 # 12. Asymmetric Mask Conditioned
-python train_debias_asym.py \
+python -m labelbias.train.scd \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method asymmetric \
     --epochs $EPOCHS --batch_size $BS \
@@ -122,7 +122,7 @@ python train_debias_asym.py \
     --fold $FOLD
 
 # 13. Asymmetric + Style Conditioned
-python train_debias_asym.py \
+python -m labelbias.train.scd \
     --dataset $DATASET --bias_ratio $BIAS_RATIO \
     --method asym_style \
     --epochs $EPOCHS --batch_size $BS \

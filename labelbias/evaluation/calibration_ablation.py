@@ -6,9 +6,9 @@ import pandas as pd
 from tqdm import tqdm
 import argparse
 
-from confident_learning_renewed import create_model, ConfidentLearningAnalyzer
-from dataloader import CelebAMaskHQBiasedDataset
-from utils.splits import get_fold_indices
+from labelbias.audit.confident_learning import create_model, ConfidentLearningAnalyzer
+from labelbias.data.celebamask import CelebAMaskHQBiasedDataset
+from labelbias.data.splits import get_fold_indices
 from torch.utils.data import DataLoader, Subset
 
 def get_args():
@@ -40,7 +40,7 @@ def main():
     
     print("Loading dataloader (fold 1 test)...")
     splits_path = 'configs/splits/cv_splits.json'
-    from utils.splits import load_splits
+    from labelbias.data.splits import load_splits
     splits_data = load_splits(splits_path)
     _, _, test_indices = get_fold_indices(splits_data, 1)
     

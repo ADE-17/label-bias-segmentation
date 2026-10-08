@@ -21,12 +21,12 @@ from tqdm import tqdm
 
 import segmentation_models_pytorch as smp
 
-from dataset_factory import (
+from labelbias.data.factory import (
     add_dataset_args, apply_dataset_defaults, create_splits, create_datasets,
     get_demographic_names, DATASET_DEFAULTS,
 )
-from utils.splits import get_fold_indices
-from utils.metrics import SegmentationMetrics
+from labelbias.data.splits import get_fold_indices
+from labelbias.metrics import SegmentationMetrics
 
 # ---- Asymmetric losses ----
 def compute_boundary_mask(masks: torch.Tensor, width: int = 2) -> torch.Tensor:

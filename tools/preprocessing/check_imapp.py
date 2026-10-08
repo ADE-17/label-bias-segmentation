@@ -1,5 +1,5 @@
 import pandas as pd
-ita_df = pd.read_csv('../configs/ita_stats_kmeans.csv')
+ita_df = pd.read_csv('configs/ita_stats_kmeans.csv')
 ita_df['isic_id'] = ita_df['image_path'].apply(lambda x: x.split('/')[-1].split('.')[0])
 ima_img_df = pd.read_csv('/path/to/IMA_dataset/img_metadata.csv')
 ima_seg_df = pd.read_csv('/path/to/IMA_dataset/seg_metadata.csv')

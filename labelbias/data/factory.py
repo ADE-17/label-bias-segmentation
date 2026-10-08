@@ -6,7 +6,7 @@ Supported datasets:
   - phc:        PHC cell segmentation with synthetic demographic shortcut
 
 Usage in scripts:
-    from dataset_factory import add_dataset_args, create_datasets, create_splits
+    from labelbias.data.factory import add_dataset_args, create_datasets, create_splits
 
     add_dataset_args(parser)   # adds --dataset, --data_root, etc.
     args = parser.parse_args()
@@ -21,7 +21,7 @@ from typing import Dict, List, Tuple
 
 import numpy as np
 
-from utils.splits import create_kfold_splits, save_splits, load_splits, get_fold_indices
+from labelbias.data.splits import create_kfold_splits, save_splits, load_splits, get_fold_indices
 
 
 DATASET_DEFAULTS = {
@@ -79,7 +79,7 @@ def create_splits(args) -> Dict:
         return load_splits(splits_path)
 
     if args.dataset == 'celebamask':
-        from dataloader import CelebAMaskHQDataset
+        from labelbias.data.celebamask import CelebAMaskHQDataset
         tmp = CelebAMaskHQDataset(
             root_dir=args.data_root,
             img_size=(args.img_size, args.img_size),
@@ -90,7 +90,7 @@ def create_splits(args) -> Dict:
         del tmp
 
     elif args.dataset == 'phc':
-        from dataloader_phc import PHCDataset
+        from labelbias.data.phc import PHCDataset
         tmp = PHCDataset(root_dir=args.data_root, img_size=(args.img_size, args.img_size),
                          tint_strength=getattr(args, 'tint_strength', 0.25))
         stratify = tmp.get_all_genders()
@@ -98,7 +98,7 @@ def create_splits(args) -> Dict:
         del tmp
 
     elif args.dataset == 'imapp':
-        from dataloader_imapp import IMAPPBiasedDataset
+        from labelbias.data.imapp import IMAPPBiasedDataset
         tmp = IMAPPBiasedDataset(csv_path=args.data_root, img_size=(args.img_size, args.img_size), bias_ratio=0.0)
         stratify = np.array(tmp.df['gender'].tolist())
         n = len(tmp)
@@ -125,7 +125,7 @@ def create_splits(args) -> Dict:
 
 def _celebamask_datasets(args, train_indices, val_indices, test_indices):
     """Return (train_ds, val_ds, test_ds) for CelebAMask-HQ."""
-    from dataloader import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
+    from labelbias.data.celebamask import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
 
     bias_ratio = getattr(args, 'bias_ratio', 0.0)
     is_biased = bias_ratio > 0
@@ -171,7 +171,7 @@ def _phc_datasets(args, train_indices, val_indices, test_indices):
     Training uses biased labels for bias_ratio% of tinted samples.
     Val/test always use clean (fine) labels.
     """
-    from dataloader_phc import PHCDataset, PHCCleanDataset
+    from labelbias.data.phc import PHCDataset, PHCCleanDataset
 
     bias_ratio = getattr(args, 'bias_ratio', 1.0)
     bias_seed = getattr(args, 'bias_seed', 42)
@@ -201,7 +201,7 @@ def _phc_datasets(args, train_indices, val_indices, test_indices):
 
 
 def _imapp_datasets(args, train_indices, val_indices, test_indices):
-    from dataloader_imapp import IMAPPBiasedDataset
+    from labelbias.data.imapp import IMAPPBiasedDataset
     from torch.utils.data import Subset
 
     bias_ratio = getattr(args, 'bias_ratio', 0.0)
@@ -254,7 +254,7 @@ def create_datasets(args, train_indices, val_indices, test_indices):
 def create_clean_eval_dataset(args, indices):
     """Create a dataset that always returns clean (ground-truth) labels."""
     if args.dataset == 'celebamask':
-        from dataloader import CelebAMaskHQDataset
+        from labelbias.data.celebamask import CelebAMaskHQDataset
         return CelebAMaskHQDataset(
             root_dir=args.data_root,
             img_size=(args.img_size, args.img_size),
@@ -262,14 +262,14 @@ def create_clean_eval_dataset(args, indices):
             indices=indices,
         )
     elif args.dataset == 'phc':
-        from dataloader_phc import PHCCleanDataset
+        from labelbias.data.phc import PHCCleanDataset
         return PHCCleanDataset(
             root_dir=args.data_root,
             img_size=(args.img_size, args.img_size),
             indices=indices,
         )
     elif args.dataset == 'imapp':
-        from dataloader_imapp import IMAPPBiasedDataset
+        from labelbias.data.imapp import IMAPPBiasedDataset
         from torch.utils.data import Subset
         ds = IMAPPBiasedDataset(
             csv_path=args.data_root,
@@ -288,7 +288,7 @@ def create_biased_eval_dataset(args, indices, bias_cfg: Dict = None):
     For PHC: uses PHCDataset with use_biased_labels=True (coarse labels).
     """
     if args.dataset == 'celebamask':
-        from dataloader import CelebAMaskHQBiasedDataset
+        from labelbias.data.celebamask import CelebAMaskHQBiasedDataset
         if bias_cfg is None:
             bias_cfg = {}
         return CelebAMaskHQBiasedDataset(
@@ -303,7 +303,7 @@ def create_biased_eval_dataset(args, indices, bias_cfg: Dict = None):
             bias_mode=bias_cfg.get('bias_mode', getattr(args, 'bias_mode', 'erosion')),
         )
     elif args.dataset == 'phc':
-        from dataloader_phc import PHCDataset
+        from labelbias.data.phc import PHCDataset
         br = (bias_cfg or {}).get('bias_ratio', getattr(args, 'bias_ratio', 1.0))
         bs = (bias_cfg or {}).get('bias_seed', getattr(args, 'bias_seed', 42))
         return PHCDataset(
@@ -315,7 +315,7 @@ def create_biased_eval_dataset(args, indices, bias_cfg: Dict = None):
             bias_seed=bs,
         )
     elif args.dataset == 'imapp':
-        from dataloader_imapp import IMAPPBiasedDataset
+        from labelbias.data.imapp import IMAPPBiasedDataset
         from torch.utils.data import Subset
         if bias_cfg is None:
             bias_cfg = {}

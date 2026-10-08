@@ -18,17 +18,17 @@ import segmentation_models_pytorch as smp
 import umap
 from scipy import stats
 
-from dataloader_imapp import IMAPPBiasedDataset
+from labelbias.data.imapp import IMAPPBiasedDataset
 
 
 '''
-python feature_analysis_imapp.py \
+python -m labelbias.evaluation.feature_analysis_imapp \
   --csv_path configs/imapp_processed.csv \
   --exp_dir /path/to/output/experiments/imapp_bias_baseline/fold_0 \
   --fold 0 \
   --output_dir /path/to/output/imapp_feature_analysis
 
-python feature_analysis_imapp.py \
+python -m labelbias.evaluation.feature_analysis_imapp \
   --csv_path configs/imapp_processed.csv \
   --exp_dir /path/to/output/experiments/imapp_biased_r100/fold_0 \
   --fold 0 \

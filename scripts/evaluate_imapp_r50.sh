@@ -12,7 +12,7 @@ source /path/to/venv/bin/activate
 export PYTHONHASHSEED=42
 cd "$(dirname "$0")/.."
 
-python evaluate_imapp.py \
+python -m labelbias.evaluation.evaluate_imapp \
     --experiments_dir /path/to/output/experiments \
     --experiments \
         imapp_baseline_r50 \

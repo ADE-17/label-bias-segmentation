@@ -12,25 +12,25 @@ the bias effect through the chosen debiasing method.
 Example usage:
     # Adversarial debiasing
     for FOLD in 0 1 2 3 4; do
-        python train_debiased.py --method adversarial --bias_ratio 1.0 \
+        python -m labelbias.train.invariance --method adversarial --bias_ratio 1.0 \
             --erosion_radius 15 --epochs 20 --lambda_debias 0.01 --fold $FOLD
     done
 
     # Fairness loss (equalized odds)
-    python train_debiased.py --method fairness --fairness_mode eo \\
+    python -m labelbias.train.invariance --method fairness --fairness_mode eo \\
         --bias_ratio 0.25 --erosion_radius 15 --fold 0
 
     # Domain invariant (MMD)
     for FOLD in 0 1 2 3 4; do
-        python train_debiased.py --method domain_invariant --domain_method mmd --bias_ratio 0.25 --erosion_radius 15 --fold $FOLD --epochs 20 --lambda_debias 0.01 --mmd_normalize --balance_gender_in_batch
+        python -m labelbias.train.invariance --method domain_invariant --domain_method mmd --bias_ratio 0.25 --erosion_radius 15 --fold $FOLD --epochs 20 --lambda_debias 0.01 --mmd_normalize --balance_gender_in_batch
     done
 
     for FOLD in 0 1 2 3 4; do
-        python train_debiased.py --method domain_invariant --domain_method coral --bias_ratio 1.00 --erosion_radius 15 --fold $FOLD --epochs 20 --lambda_debias 0.01
+        python -m labelbias.train.invariance --method domain_invariant --domain_method coral --bias_ratio 1.00 --erosion_radius 15 --fold $FOLD --epochs 20 --lambda_debias 0.01
     done
 
     for FOLD in 0 1 2 3 4; do
-        python train_debiased.py --loss_mode boundary_dice --bias_ratio 0.50 --erosion_radius 15 --fold $FOLD --epochs 20 --lambda_debias 0.01
+        python -m labelbias.train.invariance --loss_mode boundary_dice --bias_ratio 0.50 --erosion_radius 15 --fold $FOLD --epochs 20 --lambda_debias 0.01
     done
 """
 import os
@@ -48,14 +48,14 @@ from tqdm import tqdm
 
 import segmentation_models_pytorch as smp
 
-from dataloader import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
-from utils.splits import create_kfold_splits, save_splits, load_splits, get_fold_indices
-from utils.metrics import SegmentationMetrics, combined_loss
-from debiasing import (
+from labelbias.data.celebamask import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
+from labelbias.data.splits import create_kfold_splits, save_splits, load_splits, get_fold_indices
+from labelbias.metrics import SegmentationMetrics, combined_loss
+from labelbias.debiasing import (
     SegmentationWithDebiasing,
     grl_alpha_schedule,
 )
-from dataset_factory import (
+from labelbias.data.factory import (
     add_dataset_args, apply_dataset_defaults, create_splits, create_datasets,
     get_demographic_names, DATASET_DEFAULTS,
 )

@@ -33,7 +33,7 @@ echo "Running Bias Ratio: $BIAS with ViT ($ENCODER)"
 echo "========================================="
 
 # 1. ERM / Standard Biased Baseline (ViT)
-# python train_biased.py \
+# python -m labelbias.train.erm \
 #     --dataset celebamask \
 #     --bias_mode erosion \
 #     --bias_ratio $BIAS \
@@ -45,7 +45,7 @@ echo "========================================="
 #     --exp_name celeba_erm_vit_r${BIAS}
 
 # 2. Proposed: Asymmetric Loss (ViT)
-# python train_debias_asym.py \
+# python -m labelbias.train.scd \
 #     --dataset celebamask \
 #     --method asymmetric \
 #     --bias_ratio $BIAS \
@@ -57,7 +57,7 @@ echo "========================================="
 #     --exp_name celeba_asym_vit_r${BIAS}
 
 # 3. Proposed: Style-Conditioned FiLM (ViT)
-python train_debias_asym.py \
+python -m labelbias.train.scd \
     --dataset celebamask \
     --method style_cond \
     --bias_ratio $BIAS \
@@ -69,7 +69,7 @@ python train_debias_asym.py \
     --exp_name celeba_style_vit_r${BIAS}
 
 # 4. Proposed: Asym + Style (ViT)
-python train_debias_asym.py \
+python -m labelbias.train.scd \
     --dataset celebamask \
     --method asym_style \
     --bias_ratio $BIAS \

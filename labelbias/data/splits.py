@@ -137,7 +137,7 @@ if __name__ == "__main__":
     # Example usage
     import sys
     sys.path.insert(0, str(Path(__file__).parent.parent))
-    from dataloader import CelebAMaskHQDataset
+    from labelbias.data.celebamask import CelebAMaskHQDataset
     
     # Create dataset to get gender labels
     dataset = CelebAMaskHQDataset(binary_segmentation=True)

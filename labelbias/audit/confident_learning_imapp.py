@@ -32,9 +32,9 @@ import seaborn as sns
 
 import segmentation_models_pytorch as smp
 
-from dataloader import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
-from utils.splits import load_splits, get_fold_indices
-from dataset_factory import (
+from labelbias.data.celebamask import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
+from labelbias.data.splits import load_splits, get_fold_indices
+from labelbias.data.factory import (
     add_dataset_args, apply_dataset_defaults, create_splits,
     create_clean_eval_dataset, create_biased_eval_dataset,
     is_phc_experiment,
@@ -160,8 +160,6 @@ class ConfidentLearningAnalyzer:
         device: torch.device,
         num_classes: int = 2,
         bias_threshold: float = 0.02,  # 2% difference to declare bias
-        use_style: bool = False,
-        eval_group: int = 0,
     ):
         """
         Args:
@@ -176,8 +174,6 @@ class ConfidentLearningAnalyzer:
         self.device = device
         self.num_classes = num_classes
         self.bias_threshold = bias_threshold
-        self.use_style = use_style
-        self.eval_group = eval_group
         
         if self.model is not None:
             self.model.eval()
@@ -206,10 +202,7 @@ class ConfidentLearningAnalyzer:
             image_ids = batch['image_id'].cpu().numpy()
             
             # Get predicted probabilities
-            if self.use_style:
-                logits = self.model.predict(images, self.eval_group)
-            else:
-                logits = self.model(images)
+            logits = self.model(images)
             probs = F.softmax(logits, dim=1).cpu().numpy()  # (B, C, H, W)
             
             # Store per-sample
@@ -477,15 +470,15 @@ class ConfidentLearningAnalyzer:
         return results
 
     def compute_sample_normalized_metrics(self, all_probs, all_labels, thresholds, all_genders):
-        sample_ler_female = []
-        sample_sdr_female = []
-        sample_ler_male = []
-        sample_sdr_male = []
+        sample_ler_clean = []
+        sample_sdr_clean = []
+        sample_ler_biased = []
+        sample_sdr_biased = []
         
         counts = {
             'total_excess': 0, 'total_deficit': 0,
-            'female_excess': 0, 'female_deficit': 0,
-            'male_excess': 0, 'male_deficit': 0,
+            'clean_excess': 0, 'clean_deficit': 0,
+            'biased_excess': 0, 'biased_deficit': 0,
         }
 
         for probs, labels, gender in zip(all_probs, all_labels, all_genders):
@@ -496,15 +489,10 @@ class ConfidentLearningAnalyzer:
             raw_argmax = np.argmax(probs, axis=-1)
             final_preds = np.where(is_confident, confident_preds, raw_argmax)
 
-            # E_exc: Label=1, CL=0 (Annotation has excess foreground -> Dilation)
             e_exc = ((labels == 1) & (final_preds == 0)).sum()
-            # E_def: Label=0, CL=1 (Annotation has deficit foreground -> Erosion)
             e_def = ((labels == 0) & (final_preds == 1)).sum()
             
-            # E_i is total errors
             e_i = e_exc + e_def
-            
-            # Union of annotation and CL prediction
             union_area = ((labels == 1) | (final_preds == 1)).sum()
             denom = union_area + 1e-8
             
@@ -514,22 +502,22 @@ class ConfidentLearningAnalyzer:
             counts['total_excess'] += e_exc
             counts['total_deficit'] += e_def
             
-            if gender == 0:
-                sample_ler_female.append(ler)
-                sample_sdr_female.append(sdr)
-                counts['female_excess'] += e_exc
-                counts['female_deficit'] += e_def
-            else:
-                sample_ler_male.append(ler)
-                sample_sdr_male.append(sdr)
-                counts['male_excess'] += e_exc
-                counts['male_deficit'] += e_def
-        
+            if gender in [0, 1]:
+                sample_ler_clean.append(ler)
+                sample_sdr_clean.append(sdr)
+                counts['clean_excess'] += e_exc
+                counts['clean_deficit'] += e_def
+            elif gender in [2, 3]:
+                sample_ler_biased.append(ler)
+                sample_sdr_biased.append(sdr)
+                counts['biased_excess'] += e_exc
+                counts['biased_deficit'] += e_def
+
         return {
-            'ler_female': float(np.mean(sample_ler_female)) if sample_ler_female else 0.0,
-            'sdr_female': float(np.mean(sample_sdr_female)) if sample_sdr_female else 0.0,
-            'ler_male': float(np.mean(sample_ler_male)) if sample_ler_male else 0.0,
-            'sdr_male': float(np.mean(sample_sdr_male)) if sample_sdr_male else 0.0,
+            'ler_clean': float(np.mean(sample_ler_clean)) if sample_ler_clean else 0.0,
+            'sdr_clean': float(np.mean(sample_sdr_clean)) if sample_sdr_clean else 0.0,
+            'ler_biased': float(np.mean(sample_ler_biased)) if sample_ler_biased else 0.0,
+            'sdr_biased': float(np.mean(sample_sdr_biased)) if sample_sdr_biased else 0.0,
             'counts': counts
         }
 

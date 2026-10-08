@@ -25,12 +25,12 @@ echo "Running fold $FOLD"
 EPOCHS=15
 
 # Ablation 1: 0% Bias (Train style_cond model for 0% bias condition test)
-python train_debias_asym.py --dataset celebamask --method style_cond --bias_ratio 0.00 --erosion_radius 15 --epochs $EPOCHS --fold $FOLD --exp_name celeba_ablation_style_r0.00
+python -m labelbias.train.scd --dataset celebamask --method style_cond --bias_ratio 0.00 --erosion_radius 15 --epochs $EPOCHS --fold $FOLD --exp_name celeba_ablation_style_r0.00
 
 # Ablation 2: 50% Bias (Train style_cond model for 50% bias condition test)
-python train_debias_asym.py --dataset celebamask --method style_cond --bias_ratio 0.50 --erosion_radius 15 --epochs $EPOCHS --fold $FOLD --exp_name celeba_ablation_style_r0.50
+python -m labelbias.train.scd --dataset celebamask --method style_cond --bias_ratio 0.50 --erosion_radius 15 --epochs $EPOCHS --fold $FOLD --exp_name celeba_ablation_style_r0.50
 
 # Ablation 3: 50% Bias, Low Quality Model (ResNet18)
-python train_biased.py --dataset celebamask --bias_mode erosion --bias_ratio 0.50 --erosion_radius 15 --encoder resnet18 --epochs $EPOCHS --fold $FOLD --exp_name celeba_ablation_erm_resnet18_r0.50
+python -m labelbias.train.erm --dataset celebamask --bias_mode erosion --bias_ratio 0.50 --erosion_radius 15 --encoder resnet18 --epochs $EPOCHS --fold $FOLD --exp_name celeba_ablation_erm_resnet18_r0.50
 
 echo "Fold $FOLD completed at $(date +%F-%R:%S)"

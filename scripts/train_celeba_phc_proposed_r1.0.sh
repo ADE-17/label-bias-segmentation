@@ -35,19 +35,19 @@ EROSION=15
 echo "--- CelebA 100% Bias (Noise/Ours) ---"
 
 # Bootstrapping
-python train_biased.py --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --loss_mode bootstrapping_dice --epochs $EPOCHS --fold $FOLD --exp_name celeba_bootstrapped_r1.0
+python -m labelbias.train.erm --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --loss_mode bootstrapping_dice --epochs $EPOCHS --fold $FOLD --exp_name celeba_bootstrapped_r1.0
 
 # Asym mask
-python train_debias_asym.py --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --method asymmetric --epochs $EPOCHS --fold $FOLD --exp_name celeba_asym_r1.0
+python -m labelbias.train.scd --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --method asymmetric --epochs $EPOCHS --fold $FOLD --exp_name celeba_asym_r1.0
 
 # Style-cond
-python train_debias_asym.py --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --method style_cond --epochs $EPOCHS --fold $FOLD --exp_name celeba_style_r1.0
+python -m labelbias.train.scd --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --method style_cond --epochs $EPOCHS --fold $FOLD --exp_name celeba_style_r1.0
 
 # Asym+Style
-python train_debias_asym.py --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --method asym_style --epochs $EPOCHS --fold $FOLD --exp_name celeba_asym_style_r1.0
+python -m labelbias.train.scd --dataset $DATASET --bias_mode erosion --bias_ratio $BIAS --erosion_radius $EROSION --method asym_style --epochs $EPOCHS --fold $FOLD --exp_name celeba_asym_style_r1.0
 
 # Auto-film (Hybrid MoE)
-python train_hybrid_moe.py --dataset $DATASET --bias_ratio $BIAS --erosion_radius $EROSION --encoder resnet34 --hybrid_mode auto_film --warmup_epochs 5 --epochs $EPOCHS --fold $FOLD --exp_name celeba_hybrid_moe_r1.0
+python -m labelbias.train.auto_scd --dataset $DATASET --bias_ratio $BIAS --erosion_radius $EROSION --encoder resnet34 --hybrid_mode auto_film --warmup_epochs 5 --epochs $EPOCHS --fold $FOLD --exp_name celeba_hybrid_moe_r1.0
 
 
 # ==========================================
@@ -59,6 +59,6 @@ BIAS=1.0
 echo "--- PhC-U373 100% Bias (ResNet Fix) ---"
 
 # Auto-film (Hybrid MoE) using ResNet34 instead of mit_b2
-python train_hybrid_moe.py --dataset $DATASET --bias_ratio $BIAS --encoder resnet34 --hybrid_mode auto_film --warmup_epochs 5 --epochs $EPOCHS --fold $FOLD --exp_name phc_hybrid_moe_r1.0
+python -m labelbias.train.auto_scd --dataset $DATASET --bias_ratio $BIAS --encoder resnet34 --hybrid_mode auto_film --warmup_epochs 5 --epochs $EPOCHS --fold $FOLD --exp_name phc_hybrid_moe_r1.0
 
 echo "Fold $FOLD completed at $(date +%F-%R:%S)"

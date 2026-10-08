@@ -10,7 +10,7 @@ EXPERIMENTS="celeba_erm_vit_r0.50 celeba_asym_vit_r0.50 celeba_style_vit_r0.50 c
 
 echo "Starting evaluation of ViT 50% Bias experiments..."
 
-python evaluate_experiments.py \
+python -m labelbias.evaluation.evaluate \
     --dataset celebamask \
     --experiments_dir /path/to/output/experiments \
     --experiments $EXPERIMENTS \

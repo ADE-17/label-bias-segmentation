@@ -12,7 +12,7 @@ source /path/to/venv/bin/activate
 cd "$(dirname "$0")/.."
 
 echo "Starting Evaluation Group 1: CelebA 50% Bias"
-python evaluate_experiments.py --dataset celebamask \
+python -m labelbias.evaluation.evaluate --dataset celebamask \
     --experiments_dir /path/to/output/experiments \
     --output_dir /path/to/output/evaluations_celeba_mitig_50 \
     --experiments debias_fairness_eo_l0.1_bias_female_r50_e15 \
@@ -29,7 +29,7 @@ python evaluate_experiments.py --dataset celebamask \
                   debias_hybrid_auto_film_bias_female_r50_e15
 
 echo "Starting Evaluation Group 2: CelebA 100% Bias"
-python evaluate_experiments.py --dataset celebamask \
+python -m labelbias.evaluation.evaluate --dataset celebamask \
     --experiments_dir /path/to/output/experiments \
     --output_dir /path/to/output/evaluations_celeba_mitig_100 \
     --experiments debias_fairness_eo_l0.1_bias_female_r100_e15 \
@@ -46,7 +46,7 @@ python evaluate_experiments.py --dataset celebamask \
                   debias_hybrid_auto_film_bias_female_r100_e15
 
 echo "Starting Evaluation Group 3: PhC-U373 100% Bias"
-python evaluate_experiments.py --dataset phc_u373 \
+python -m labelbias.evaluation.evaluate --dataset phc_u373 \
     --experiments_dir /path/to/output/experiments \
     --output_dir /path/to/output/evaluations_phc_mitig_100 \
     --experiments debias_fairness_eo_l0.1_phc_biased_r100 \

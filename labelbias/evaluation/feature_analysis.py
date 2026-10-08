@@ -17,10 +17,10 @@ For each experiment checkpoint:
   4. Statistical tests (permutation test for significance)
 
 Usage:
-    python feature_analysis.py --experiments debias_domain_invariant_mmd_l0.01_bias_female_r50_e15 --fold 0 --output_dir /path/to/output/experiments/feature_analysis/debias
-    python feature_analysis.py --experiments binary_seg_cv bias_female_r25_e15 bias_female_r50_e15 bias_female_r75_e15 bias_female_r100_e15 --output_dir /path/to/output/experiments/feature_analysis/bias_celeba
-    python feature_analysis.py --experiments phc_biased_r0 phc_biased_r25 phc_biased_r50 phc_biased_r100
-    python feature_analysis.py --experiments debias_domain_invariant_mmd_logit_l0.01_bias_female_r100_e15 bias_female_r100_e15 debias_domain_invariant_mmd_logit_l0.01_bias_female_r50_e15 bias_female_r50_e15
+    python -m labelbias.evaluation.feature_analysis --experiments debias_domain_invariant_mmd_l0.01_bias_female_r50_e15 --fold 0 --output_dir /path/to/output/experiments/feature_analysis/debias
+    python -m labelbias.evaluation.feature_analysis --experiments binary_seg_cv bias_female_r25_e15 bias_female_r50_e15 bias_female_r75_e15 bias_female_r100_e15 --output_dir /path/to/output/experiments/feature_analysis/bias_celeba
+    python -m labelbias.evaluation.feature_analysis --experiments phc_biased_r0 phc_biased_r25 phc_biased_r50 phc_biased_r100
+    python -m labelbias.evaluation.feature_analysis --experiments debias_domain_invariant_mmd_logit_l0.01_bias_female_r100_e15 bias_female_r100_e15 debias_domain_invariant_mmd_logit_l0.01_bias_female_r50_e15 bias_female_r50_e15
 """
 import argparse
 import json
@@ -44,9 +44,9 @@ import pandas as pd
 
 import segmentation_models_pytorch as smp
 
-from dataloader import CelebAMaskHQDataset
-from utils.splits import load_splits, get_fold_indices
-from dataset_factory import (
+from labelbias.data.celebamask import CelebAMaskHQDataset
+from labelbias.data.splits import load_splits, get_fold_indices
+from labelbias.data.factory import (
     add_dataset_args, apply_dataset_defaults, create_clean_eval_dataset,
     create_splits, get_demographic_names, DATASET_DEFAULTS, is_phc_experiment,
 )

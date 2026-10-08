@@ -9,12 +9,12 @@ import numpy as np
 from tqdm import tqdm
 import segmentation_models_pytorch as smp
 
-from dataloader_imapp import IMAPPBiasedDataset
-from utils.metrics import combined_loss
+from labelbias.data.imapp import IMAPPBiasedDataset
+from labelbias.metrics import combined_loss
 from sklearn.model_selection import KFold
 
 '''
-python train_imapp_biased.py \
+python -m labelbias.train.imapp_erm \
   --csv_path configs/imapp_processed.csv \
   --epochs 10 \
   --batch_size 32 \

@@ -12,13 +12,13 @@ source /path/to/venv/bin/activate
 cd "$(dirname "$0")/.."
 
 echo "Starting Evaluation: CelebA 50% Bias (Remaining)"
-python evaluate_experiments.py --dataset celebamask \
+python -m labelbias.evaluation.evaluate --dataset celebamask \
     --experiments_dir /path/to/output/experiments \
     --output_dir /path/to/output/evaluations_celeba_mitig_50 \
     --experiments celeba_hybrid_moe_r0.50
 
 echo "Starting Evaluation: CelebA 100% Bias (Remaining)"
-python evaluate_experiments.py --dataset celebamask \
+python -m labelbias.evaluation.evaluate --dataset celebamask \
     --experiments_dir /path/to/output/experiments \
     --output_dir /path/to/output/evaluations_celeba_mitig_100 \
     --experiments celeba_coral_r1.0 \
@@ -30,7 +30,7 @@ python evaluate_experiments.py --dataset celebamask \
                   celeba_hybrid_moe_r1.0
 
 echo "Starting Evaluation: PhC-U373 100% Bias (All)"
-python evaluate_experiments.py --dataset phc \
+python -m labelbias.evaluation.evaluate --dataset phc \
     --experiments_dir /path/to/output/experiments \
     --output_dir /path/to/output/evaluations_phc_mitig_100 \
     --experiments phc_eo_r1.0 \

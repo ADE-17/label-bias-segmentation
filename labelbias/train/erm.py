@@ -5,30 +5,30 @@ Supports erosion (under-seg), dilation (over-seg), and wave (non-uniform boundar
 
 Example usage:
 for FOLD in 0 1 2 3 4; do
-    python train_biased.py --bias_mode erosion --bias_ratio .50 --erosion_radius 15 --fold $FOLD --epochs 10
+    python -m labelbias.train.erm --bias_mode erosion --bias_ratio .50 --erosion_radius 15 --fold $FOLD --epochs 10
 done
 
 # Dilation (over-segmentation) bias
-python train_biased.py --bias_mode dilation --bias_ratio .50 --erosion_radius 10 --fold 0 --epochs 10
+python -m labelbias.train.erm --bias_mode dilation --bias_ratio .50 --erosion_radius 10 --fold 0 --epochs 10
 
 # Wave (non-uniform boundary perturbation) bias
-python train_biased.py --bias_mode wave --bias_ratio .50 --erosion_radius 8 --fold 0 --epochs 10
+python -m labelbias.train.erm --bias_mode wave --bias_ratio .50 --erosion_radius 8 --fold 0 --epochs 10
 
 python aggregate_cv_results.py --exp_dir /path/to/output/experiments/bias_female_r25_e5
 
 # Train biased model on PHC
-python train_biased.py --dataset phc --epochs 20 --fold 0
+python -m labelbias.train.erm --dataset phc --epochs 20 --fold 0
 
 # Train debiased model on PHC (MMD)
-python train_debiased.py --dataset phc --method domain_invariant --domain_method mmd_logit --epochs 20 --fold 0
+python -m labelbias.train.invariance --dataset phc --method domain_invariant --domain_method mmd_logit --epochs 20 --fold 0
 
 # Feature analysis (auto-detects dataset from experiment config)
-python feature_analysis.py --dataset phc --experiments phc_biased
+python -m labelbias.evaluation.feature_analysis --dataset phc --experiments phc_biased
 
 # CL analysis (auto-detects dataset per experiment)
 python run_cl_analysis.py --experiments phc_biased --folds 0
 
-python train_biased.py --loss_mode dice_boundary --bias_ratio 0.50 --erosion_radius 15 --fold 0 --epochs 10 --exp_name dice_boundary_bias_r50_e15
+python -m labelbias.train.erm --loss_mode dice_boundary --bias_ratio 0.50 --erosion_radius 15 --fold 0 --epochs 10 --exp_name dice_boundary_bias_r50_e15
 """
 import os
 import sys
@@ -46,10 +46,10 @@ from tqdm import tqdm
 
 import segmentation_models_pytorch as smp
 
-from dataloader import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
-from utils.splits import create_kfold_splits, save_splits, load_splits, get_fold_indices
-from utils.metrics import SegmentationMetrics, combined_loss, boundary_dice_loss
-from dataset_factory import (
+from labelbias.data.celebamask import CelebAMaskHQDataset, CelebAMaskHQBiasedDataset
+from labelbias.data.splits import create_kfold_splits, save_splits, load_splits, get_fold_indices
+from labelbias.metrics import SegmentationMetrics, combined_loss, boundary_dice_loss
+from labelbias.data.factory import (
     add_dataset_args, apply_dataset_defaults, create_splits, create_datasets,
     get_demographic_names, DATASET_DEFAULTS,
 )
